@@ -9,38 +9,141 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as CategoriasRouteImport } from './routes/categorias'
+import { Route as CarrinhoRouteImport } from './routes/carrinho'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SelasTipoRouteImport } from './routes/selas.$tipo'
+import { Route as ProdutoSlugRouteImport } from './routes/produto.$slug'
+import { Route as CategoriaSlugRouteImport } from './routes/categoria.$slug'
 
+const CheckoutRoute = CheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CategoriasRoute = CategoriasRouteImport.update({
+  id: '/categorias',
+  path: '/categorias',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CarrinhoRoute = CarrinhoRouteImport.update({
+  id: '/carrinho',
+  path: '/carrinho',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SelasTipoRoute = SelasTipoRouteImport.update({
+  id: '/selas/$tipo',
+  path: '/selas/$tipo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProdutoSlugRoute = ProdutoSlugRouteImport.update({
+  id: '/produto/$slug',
+  path: '/produto/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CategoriaSlugRoute = CategoriaSlugRouteImport.update({
+  id: '/categoria/$slug',
+  path: '/categoria/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/carrinho': typeof CarrinhoRoute
+  '/categorias': typeof CategoriasRoute
+  '/checkout': typeof CheckoutRoute
+  '/categoria/$slug': typeof CategoriaSlugRoute
+  '/produto/$slug': typeof ProdutoSlugRoute
+  '/selas/$tipo': typeof SelasTipoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/carrinho': typeof CarrinhoRoute
+  '/categorias': typeof CategoriasRoute
+  '/checkout': typeof CheckoutRoute
+  '/categoria/$slug': typeof CategoriaSlugRoute
+  '/produto/$slug': typeof ProdutoSlugRoute
+  '/selas/$tipo': typeof SelasTipoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/carrinho': typeof CarrinhoRoute
+  '/categorias': typeof CategoriasRoute
+  '/checkout': typeof CheckoutRoute
+  '/categoria/$slug': typeof CategoriaSlugRoute
+  '/produto/$slug': typeof ProdutoSlugRoute
+  '/selas/$tipo': typeof SelasTipoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/carrinho'
+    | '/categorias'
+    | '/checkout'
+    | '/categoria/$slug'
+    | '/produto/$slug'
+    | '/selas/$tipo'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/carrinho'
+    | '/categorias'
+    | '/checkout'
+    | '/categoria/$slug'
+    | '/produto/$slug'
+    | '/selas/$tipo'
+  id:
+    | '__root__'
+    | '/'
+    | '/carrinho'
+    | '/categorias'
+    | '/checkout'
+    | '/categoria/$slug'
+    | '/produto/$slug'
+    | '/selas/$tipo'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CarrinhoRoute: typeof CarrinhoRoute
+  CategoriasRoute: typeof CategoriasRoute
+  CheckoutRoute: typeof CheckoutRoute
+  CategoriaSlugRoute: typeof CategoriaSlugRoute
+  ProdutoSlugRoute: typeof ProdutoSlugRoute
+  SelasTipoRoute: typeof SelasTipoRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/checkout': {
+      id: '/checkout'
+      path: '/checkout'
+      fullPath: '/checkout'
+      preLoaderRoute: typeof CheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/categorias': {
+      id: '/categorias'
+      path: '/categorias'
+      fullPath: '/categorias'
+      preLoaderRoute: typeof CategoriasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/carrinho': {
+      id: '/carrinho'
+      path: '/carrinho'
+      fullPath: '/carrinho'
+      preLoaderRoute: typeof CarrinhoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +151,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/selas/$tipo': {
+      id: '/selas/$tipo'
+      path: '/selas/$tipo'
+      fullPath: '/selas/$tipo'
+      preLoaderRoute: typeof SelasTipoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/produto/$slug': {
+      id: '/produto/$slug'
+      path: '/produto/$slug'
+      fullPath: '/produto/$slug'
+      preLoaderRoute: typeof ProdutoSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/categoria/$slug': {
+      id: '/categoria/$slug'
+      path: '/categoria/$slug'
+      fullPath: '/categoria/$slug'
+      preLoaderRoute: typeof CategoriaSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CarrinhoRoute: CarrinhoRoute,
+  CategoriasRoute: CategoriasRoute,
+  CheckoutRoute: CheckoutRoute,
+  CategoriaSlugRoute: CategoriaSlugRoute,
+  ProdutoSlugRoute: ProdutoSlugRoute,
+  SelasTipoRoute: SelasTipoRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
