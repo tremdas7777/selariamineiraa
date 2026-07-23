@@ -11,6 +11,7 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { CartProvider } from "@/lib/cart";
 
 function NotFoundComponent() {
   return (
@@ -77,21 +78,23 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Selaria Mineira — Selas, Arreios e Artigos em Couro" },
+      { name: "description", content: "Selaria mineira artesanal: selas, arreios, freios, esporas, botas, chapéus e acessórios em couro legítimo. Tradição de Minas Gerais em cada peça." },
+      { property: "og:title", content: "Selaria Mineira — Selas, Arreios e Artigos em Couro" },
+      { property: "og:description", content: "Selaria mineira artesanal: selas, arreios, freios, esporas, botas, chapéus e acessórios em couro legítimo. Tradição de Minas Gerais em cada peça." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Selaria Mineira — Selas, Arreios e Artigos em Couro" },
+      { name: "twitter:description", content: "Selaria mineira artesanal: selas, arreios, freios, esporas, botas, chapéus e acessórios em couro legítimo. Tradição de Minas Gerais em cada peça." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/92b97e25-90da-4f36-a456-fac5478fab70/id-preview-2ea3a2da--3aae9976-9f24-48d3-ad42-cd94b47a1547.lovable.app-1784311335596.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/92b97e25-90da-4f36-a456-fac5478fab70/id-preview-2ea3a2da--3aae9976-9f24-48d3-ad42-cd94b47a1547.lovable.app-1784311335596.png" },
     ],
     links: [
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "stylesheet", href: appCss },
+      { rel: "icon", href: "/favicon.png", type: "image/png" },
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;900&family=Inter:wght@400;500;600;700&display=swap" },
     ],
   }),
   shellComponent: RootShell,
@@ -119,8 +122,11 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <CartProvider>
+        {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+        <Outlet />
+      </CartProvider>
     </QueryClientProvider>
   );
 }
+
