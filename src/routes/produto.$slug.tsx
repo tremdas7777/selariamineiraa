@@ -128,7 +128,7 @@ function ProductPage() {
             </button>
           </div>
 
-          <Link to="/checkout" className="block w-full text-center bg-accent text-accent-foreground py-4 rounded-md font-black uppercase tracking-wider text-sm hover:brightness-110 transition mb-6">
+          <Link to="/checkout" className="block w-full text-center bg-foreground text-background py-4 rounded-md font-black uppercase tracking-wider text-sm border-2 border-accent hover:bg-primary hover:border-primary transition mb-6">
             Comprar agora
           </Link>
 
