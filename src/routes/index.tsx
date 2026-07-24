@@ -29,7 +29,7 @@ const beneficios = [
   { icon: ShieldCheck, titulo: "Loja 100% segura", sub: "selo de segurança" },
   { icon: Truck, titulo: "Entregamos", sub: "em todo o Brasil" },
   { icon: CreditCard, titulo: "Parcele suas compras", sub: "em até 10x sem juros" },
-  { icon: Tag, titulo: "5% de desconto", sub: "no PIX" },
+  { icon: Tag, titulo: "10% de desconto", sub: "no PIX" },
 ];
 
 function Home() {
