@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState, type FormEvent, type InputHTMLAttributes } from "react";
-import { CreditCard, QrCode, Barcode, Lock, Check, Sparkles, Loader2 } from "lucide-react";
+import { CreditCard, QrCode, Lock, Check, Sparkles, Loader2 } from "lucide-react";
 import { StoreLayout } from "@/components/StoreLayout";
 import { useCart } from "@/lib/cart";
 import { formatBRL } from "@/lib/products";
@@ -20,7 +20,7 @@ export const Route = createFileRoute("/checkout")({
   component: CheckoutPage,
 });
 
-type PayMethod = "pix" | "card" | "boleto";
+type PayMethod = "pix" | "card";
 
 const ENGRAVING_PRICE = 49.9;
 const isSela = (name: string) => /\bsela\b/i.test(name);
@@ -58,7 +58,7 @@ function CheckoutPage() {
 
   const frete = subtotal > 0 && subtotal < 399 ? 29.9 : 0;
   const baseTotal = subtotal + frete + engravingTotal;
-  const total = method === "pix" ? baseTotal * 0.95 : baseTotal;
+  const total = method === "pix" ? baseTotal * 0.9 : baseTotal;
 
   const update = (k: keyof FormState, v: string) => {
     setForm((p) => ({ ...p, [k]: v }));
@@ -210,10 +210,9 @@ function CheckoutPage() {
             )}
 
             <Section title={selaItems.length > 0 ? "4. Pagamento" : "3. Pagamento"}>
-              <div className="grid grid-cols-3 gap-3 mb-5">
-                <PayOption current={method} value="pix" onSelect={setMethod} icon={QrCode} label="PIX" hint="5% off" />
+              <div className="grid grid-cols-2 gap-3 mb-5">
+                <PayOption current={method} value="pix" onSelect={setMethod} icon={QrCode} label="PIX" hint="10% off" />
                 <PayOption current={method} value="card" onSelect={setMethod} icon={CreditCard} label="Cartão" hint="até 10x" />
-                <PayOption current={method} value="boleto" onSelect={setMethod} icon={Barcode} label="Boleto" hint="à vista" />
               </div>
 
               {method === "card" && (
@@ -229,11 +228,7 @@ function CheckoutPage() {
                   Ao confirmar, geraremos o QR Code PIX. Você tem 30 minutos para pagar.
                 </div>
               )}
-              {method === "boleto" && (
-                <div className="bg-secondary/50 rounded-md p-4 text-sm text-muted-foreground">
-                  O boleto será enviado por e-mail. Prazo de vencimento: 3 dias úteis.
-                </div>
-              )}
+              {method === "card" && null}
 
               <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
                 <Lock className="size-3.5 text-accent" /> Ambiente 100% seguro. Gateway de pagamento será integrado em breve.
@@ -262,7 +257,7 @@ function CheckoutPage() {
                 <div className="flex justify-between"><span className="text-muted-foreground">Personalização ({engravingCount}×)</span><span>{formatBRL(engravingTotal)}</span></div>
               )}
               {method === "pix" && (
-                <div className="flex justify-between text-accent font-bold"><span>Desconto PIX (5%)</span><span>-{formatBRL(baseTotal * 0.05)}</span></div>
+                <div className="flex justify-between text-accent font-bold"><span>Desconto PIX (10%)</span><span>-{formatBRL(baseTotal * 0.1)}</span></div>
               )}
             </div>
             <div className="border-t border-border pt-3 mt-3 flex justify-between items-baseline">
