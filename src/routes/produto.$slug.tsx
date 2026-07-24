@@ -1,4 +1,4 @@
-import { createFileRoute, Link, notFound, useRouter } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound, useRouter, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { ChevronRight, ShieldCheck, Truck, CreditCard, Star, Minus, Plus, ShoppingBag, Check } from "lucide-react";
 import { StoreLayout } from "@/components/StoreLayout";
@@ -50,6 +50,7 @@ function ProductPage() {
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
   const { add } = useCart();
+  const navigate = useNavigate();
 
   const parcela = product.priceNumber / 10;
   const pixPrice = product.priceNumber * 0.9;
@@ -59,6 +60,11 @@ function ProductPage() {
     add({ slug: product.slug, name: product.name, image: product.image, price: product.priceNumber }, qty);
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
+  };
+
+  const handleBuyNow = () => {
+    add({ slug: product.slug, name: product.name, image: product.image, price: product.priceNumber }, qty);
+    navigate({ to: "/checkout" });
   };
 
   return (
@@ -128,9 +134,9 @@ function ProductPage() {
             </button>
           </div>
 
-          <Link to="/checkout" className="block w-full text-center bg-primary text-primary-foreground py-4 rounded-md font-black uppercase tracking-wider text-sm hover:bg-accent hover:text-accent-foreground transition mb-6">
+          <button onClick={handleBuyNow} className="block w-full text-center bg-primary text-primary-foreground py-4 rounded-md font-black uppercase tracking-wider text-sm hover:bg-accent hover:text-accent-foreground transition mb-6">
             Comprar agora
-          </Link>
+          </button>
 
           {/* CEP */}
           <div className="border border-border rounded-md p-4 mb-6">
