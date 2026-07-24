@@ -1,4 +1,4 @@
-import { createFileRoute, Link, notFound, useRouter } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound, useRouter, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { ChevronRight, ShieldCheck, Truck, CreditCard, Star, Minus, Plus, ShoppingBag, Check } from "lucide-react";
 import { StoreLayout } from "@/components/StoreLayout";
