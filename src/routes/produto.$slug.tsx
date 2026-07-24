@@ -52,7 +52,7 @@ function ProductPage() {
   const { add } = useCart();
 
   const parcela = product.priceNumber / 10;
-  const pixPrice = product.priceNumber * 0.95;
+  const pixPrice = product.priceNumber * 0.9;
   const related = products.filter((p) => p.slug !== product.slug).slice(0, 4);
 
   const handleAdd = () => {
