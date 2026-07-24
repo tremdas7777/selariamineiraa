@@ -228,11 +228,7 @@ function CheckoutPage() {
                   Ao confirmar, geraremos o QR Code PIX. Você tem 30 minutos para pagar.
                 </div>
               )}
-              {method === "boleto" && (
-                <div className="bg-secondary/50 rounded-md p-4 text-sm text-muted-foreground">
-                  O boleto será enviado por e-mail. Prazo de vencimento: 3 dias úteis.
-                </div>
-              )}
+              {method === "card" && null}
 
               <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
                 <Lock className="size-3.5 text-accent" /> Ambiente 100% seguro. Gateway de pagamento será integrado em breve.
