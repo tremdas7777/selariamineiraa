@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState, type FormEvent, type InputHTMLAttributes } from "react";
-import { CreditCard, QrCode, Barcode, Lock, Check, Sparkles, Loader2 } from "lucide-react";
+import { CreditCard, QrCode, Lock, Check, Sparkles, Loader2 } from "lucide-react";
 import { StoreLayout } from "@/components/StoreLayout";
 import { useCart } from "@/lib/cart";
 import { formatBRL } from "@/lib/products";
