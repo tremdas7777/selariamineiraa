@@ -122,13 +122,13 @@ function ProductPage() {
             </div>
             <button
               onClick={handleAdd}
-              className="flex-1 inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-6 py-4 rounded-md font-bold uppercase tracking-wider text-sm hover:bg-accent hover:text-accent-foreground transition"
+              className="flex-1 inline-flex items-center justify-center gap-2 bg-foreground text-background px-6 py-4 rounded-md font-bold uppercase tracking-wider text-sm border-2 border-accent hover:bg-primary hover:border-primary transition"
             >
               {added ? <><Check className="size-5" /> Adicionado!</> : <><ShoppingBag className="size-5" /> Adicionar ao carrinho</>}
             </button>
           </div>
 
-          <Link to="/checkout" className="block w-full text-center bg-foreground text-background py-4 rounded-md font-black uppercase tracking-wider text-sm border-2 border-accent hover:bg-primary hover:border-primary transition mb-6">
+          <Link to="/checkout" className="block w-full text-center bg-primary text-primary-foreground py-4 rounded-md font-black uppercase tracking-wider text-sm hover:bg-accent hover:text-accent-foreground transition mb-6">
             Comprar agora
           </Link>
 
