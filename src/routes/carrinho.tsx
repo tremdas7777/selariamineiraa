@@ -96,7 +96,7 @@ function CartPage() {
               <span className="text-2xl font-black text-primary" style={{ fontFamily: "Playfair Display, serif" }}>{formatBRL(total)}</span>
             </div>
             <div className="text-xs text-muted-foreground mb-5">
-              ou <strong>10x de {formatBRL(total / 10)}</strong> sem juros
+              ou <strong>12x de {formatBRL(total / 12)}</strong>
             </div>
             <Link to="/checkout" className="w-full inline-flex items-center justify-center gap-2 bg-accent text-accent-foreground px-6 py-4 rounded-md font-black uppercase tracking-wider text-sm hover:brightness-110 transition">
               Finalizar compra <ArrowRight className="size-4" />
