@@ -101,7 +101,7 @@ function ProductPage() {
               ou <strong>10x de {formatBRL(parcela)}</strong> sem juros
             </div>
             <div className="inline-block mt-2 bg-accent/10 text-accent-foreground px-3 py-1 rounded text-xs font-bold">
-              <span className="text-accent">{formatBRL(pixPrice)}</span> à vista no PIX (5% off)
+              <span className="text-accent">{formatBRL(pixPrice)}</span> à vista no PIX (10% off)
             </div>
           </div>
 
