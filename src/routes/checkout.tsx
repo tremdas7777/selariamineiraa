@@ -58,7 +58,7 @@ function CheckoutPage() {
 
   const frete = subtotal > 0 && subtotal < 399 ? 29.9 : 0;
   const baseTotal = subtotal + frete + engravingTotal;
-  const total = method === "pix" ? baseTotal * 0.95 : baseTotal;
+  const total = method === "pix" ? baseTotal * 0.9 : baseTotal;
 
   const update = (k: keyof FormState, v: string) => {
     setForm((p) => ({ ...p, [k]: v }));
