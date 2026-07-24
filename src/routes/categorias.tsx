@@ -35,7 +35,6 @@ function CategoriesPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {categories.map((c) => {
-            const count = getProductsByCategory(c.slug).length;
             const cover = getProductsByCategory(c.slug)[0]?.image;
             return (
               <Link
@@ -50,9 +49,8 @@ function CategoriesPage() {
                   </div>
                 )}
                 <div className="p-5">
-                  <div className="flex items-center justify-between mb-1">
+                  <div className="mb-1">
                     <h2 className="text-xl font-black text-primary" style={{ fontFamily: "Playfair Display, serif" }}>{c.name}</h2>
-                    <span className="text-xs text-muted-foreground">{count} {count === 1 ? "item" : "itens"}</span>
                   </div>
                   <p className="text-sm text-muted-foreground mb-3">{c.description}</p>
                   <span className="inline-flex items-center gap-1 text-xs font-bold text-accent uppercase tracking-widest">
