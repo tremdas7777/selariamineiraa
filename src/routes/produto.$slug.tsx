@@ -134,9 +134,9 @@ function ProductPage() {
             </button>
           </div>
 
-          <Link to="/checkout" className="block w-full text-center bg-primary text-primary-foreground py-4 rounded-md font-black uppercase tracking-wider text-sm hover:bg-accent hover:text-accent-foreground transition mb-6">
+          <button onClick={handleBuyNow} className="block w-full text-center bg-primary text-primary-foreground py-4 rounded-md font-black uppercase tracking-wider text-sm hover:bg-accent hover:text-accent-foreground transition mb-6">
             Comprar agora
-          </Link>
+          </button>
 
           {/* CEP */}
           <div className="border border-border rounded-md p-4 mb-6">
