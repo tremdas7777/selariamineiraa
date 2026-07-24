@@ -257,7 +257,7 @@ function CheckoutPage() {
                 <div className="flex justify-between"><span className="text-muted-foreground">Personalização ({engravingCount}×)</span><span>{formatBRL(engravingTotal)}</span></div>
               )}
               {method === "pix" && (
-                <div className="flex justify-between text-accent font-bold"><span>Desconto PIX (5%)</span><span>-{formatBRL(baseTotal * 0.05)}</span></div>
+                <div className="flex justify-between text-accent font-bold"><span>Desconto PIX (10%)</span><span>-{formatBRL(baseTotal * 0.1)}</span></div>
               )}
             </div>
             <div className="border-t border-border pt-3 mt-3 flex justify-between items-baseline">
