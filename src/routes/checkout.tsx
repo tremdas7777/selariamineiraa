@@ -20,7 +20,7 @@ export const Route = createFileRoute("/checkout")({
   component: CheckoutPage,
 });
 
-type PayMethod = "pix" | "card" | "boleto";
+type PayMethod = "pix" | "card";
 
 const ENGRAVING_PRICE = 49.9;
 const isSela = (name: string) => /\bsela\b/i.test(name);
