@@ -1,9 +1,13 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useMemo, useState, type FormEvent } from "react";
-import { CreditCard, QrCode, Barcode, Lock, Check, Sparkles } from "lucide-react";
+import { useMemo, useState, type FormEvent, type InputHTMLAttributes } from "react";
+import { CreditCard, QrCode, Barcode, Lock, Check, Sparkles, Loader2 } from "lucide-react";
 import { StoreLayout } from "@/components/StoreLayout";
 import { useCart } from "@/lib/cart";
 import { formatBRL } from "@/lib/products";
+import {
+  maskCPF, maskPhone, maskCEP, maskCard, maskCardExp, maskCVV,
+  isValidCPF, isValidCEP, isValidPhone, fetchCEP,
+} from "@/lib/masks";
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({
@@ -21,17 +25,34 @@ type PayMethod = "pix" | "card" | "boleto";
 const ENGRAVING_PRICE = 49.9;
 const isSela = (name: string) => /\bsela\b/i.test(name);
 
+type FormState = {
+  email: string; phone: string; name: string; cpf: string;
+  cep: string; city: string; uf: string; address: string;
+  number: string; complement: string; neighborhood: string;
+  cardNumber: string; cardName: string; cardExp: string; cardCvv: string;
+};
+
+const initialForm: FormState = {
+  email: "", phone: "", name: "", cpf: "",
+  cep: "", city: "", uf: "", address: "",
+  number: "", complement: "", neighborhood: "",
+  cardNumber: "", cardName: "", cardExp: "", cardCvv: "",
+};
+
 function CheckoutPage() {
   const { items, subtotal, count, clear } = useCart();
   const navigate = useNavigate();
   const [method, setMethod] = useState<PayMethod>("pix");
   const [done, setDone] = useState(false);
   const [engravings, setEngravings] = useState<Record<string, string>>({});
+  const [form, setForm] = useState<FormState>(initialForm);
+  const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({});
+  const [cepLoading, setCepLoading] = useState(false);
+  const [cepError, setCepError] = useState<string | null>(null);
 
   const selaItems = useMemo(() => items.filter((i) => isSela(i.name)), [items]);
   const engravingCount = selaItems.reduce(
-    (sum, i) => sum + (engravings[i.slug]?.trim() ? i.qty : 0),
-    0,
+    (sum, i) => sum + (engravings[i.slug]?.trim() ? i.qty : 0), 0,
   );
   const engravingTotal = engravingCount * ENGRAVING_PRICE;
 
@@ -39,8 +60,54 @@ function CheckoutPage() {
   const baseTotal = subtotal + frete + engravingTotal;
   const total = method === "pix" ? baseTotal * 0.95 : baseTotal;
 
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
+  const update = (k: keyof FormState, v: string) => {
+    setForm((p) => ({ ...p, [k]: v }));
+    setErrors((p) => ({ ...p, [k]: undefined }));
+  };
+
+  const handleCepBlur = async () => {
+    setCepError(null);
+    if (!isValidCEP(form.cep)) return;
+    setCepLoading(true);
+    const data = await fetchCEP(form.cep);
+    setCepLoading(false);
+    if (!data) { setCepError("CEP não encontrado"); return; }
+    setForm((p) => ({
+      ...p,
+      address: data.logradouro || p.address,
+      neighborhood: data.bairro || p.neighborhood,
+      city: data.localidade || p.city,
+      uf: data.uf || p.uf,
+    }));
+  };
+
+  const validate = (): boolean => {
+    const e: Partial<Record<keyof FormState, string>> = {};
+    if (!/^\S+@\S+\.\S+$/.test(form.email)) e.email = "E-mail inválido";
+    if (!isValidPhone(form.phone)) e.phone = "Telefone inválido";
+    if (form.name.trim().length < 3) e.name = "Informe o nome completo";
+    if (!isValidCPF(form.cpf)) e.cpf = "CPF inválido";
+    if (!isValidCEP(form.cep)) e.cep = "CEP inválido";
+    if (!form.address.trim()) e.address = "Obrigatório";
+    if (!form.number.trim()) e.number = "Obrigatório";
+    if (!form.city.trim()) e.city = "Obrigatório";
+    if (method === "card") {
+      if (form.cardNumber.replace(/\s/g, "").length < 13) e.cardNumber = "Número inválido";
+      if (form.cardName.trim().length < 3) e.cardName = "Obrigatório";
+      if (form.cardExp.length !== 5) e.cardExp = "MM/AA";
+      if (form.cardCvv.length < 3) e.cardCvv = "CVV";
+    }
+    setErrors(e);
+    return Object.keys(e).length === 0;
+  };
+
+  const handleSubmit = (ev: FormEvent) => {
+    ev.preventDefault();
+    if (!validate()) {
+      const first = document.querySelector<HTMLElement>("[data-error='true']");
+      first?.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
     // TODO: integrar gateway de pagamento (Stripe / Mercado Pago / Pagar.me)
     setDone(true);
     clear();
@@ -81,22 +148,32 @@ function CheckoutPage() {
       <div className="max-w-7xl mx-auto px-4 py-10">
         <h1 className="text-3xl md:text-4xl font-black mb-8" style={{ fontFamily: "Playfair Display, serif" }}>Finalizar compra</h1>
 
-        <form onSubmit={handleSubmit} className="grid lg:grid-cols-3 gap-8">
+        <form onSubmit={handleSubmit} noValidate className="grid lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
             <Section title="1. Contato">
-              <Field label="E-mail" name="email" type="email" required />
-              <Field label="Telefone" name="phone" required />
+              <div className="grid md:grid-cols-2 gap-4">
+                <Field label="E-mail" type="email" value={form.email} onChange={(v) => update("email", v)} error={errors.email} placeholder="voce@email.com" autoComplete="email" />
+                <Field label="Telefone" value={form.phone} onChange={(v) => update("phone", maskPhone(v))} error={errors.phone} placeholder="(31) 99999-9999" inputMode="tel" autoComplete="tel" />
+              </div>
             </Section>
 
             <Section title="2. Entrega">
-              <div className="grid md:grid-cols-2 gap-4">
-                <Field label="Nome completo" name="name" required />
-                <Field label="CPF" name="cpf" required />
-                <Field label="CEP" name="cep" required />
-                <Field label="Cidade" name="city" required />
-                <Field label="Endereço" name="address" required className="md:col-span-2" />
-                <Field label="Número" name="number" required />
-                <Field label="Complemento" name="complement" />
+              <div className="grid md:grid-cols-6 gap-4">
+                <Field className="md:col-span-4" label="Nome completo" value={form.name} onChange={(v) => update("name", v)} error={errors.name} autoComplete="name" />
+                <Field className="md:col-span-2" label="CPF" value={form.cpf} onChange={(v) => update("cpf", maskCPF(v))} error={errors.cpf} placeholder="000.000.000-00" inputMode="numeric" />
+
+                <div className="md:col-span-2 relative">
+                  <Field label="CEP" value={form.cep} onChange={(v) => update("cep", maskCEP(v))} onBlur={handleCepBlur} error={errors.cep ?? cepError ?? undefined} placeholder="00000-000" inputMode="numeric" autoComplete="postal-code" />
+                  {cepLoading && <Loader2 className="size-4 animate-spin absolute right-3 top-9 text-muted-foreground" />}
+                </div>
+                <Field className="md:col-span-3" label="Cidade" value={form.city} onChange={(v) => update("city", v)} error={errors.city} autoComplete="address-level2" />
+                <Field className="md:col-span-1" label="UF" value={form.uf} onChange={(v) => update("uf", v.toUpperCase().slice(0, 2))} maxLength={2} autoComplete="address-level1" />
+
+                <Field className="md:col-span-4" label="Endereço" value={form.address} onChange={(v) => update("address", v)} error={errors.address} autoComplete="address-line1" />
+                <Field className="md:col-span-2" label="Número" value={form.number} onChange={(v) => update("number", v)} error={errors.number} inputMode="numeric" />
+
+                <Field className="md:col-span-3" label="Bairro" value={form.neighborhood} onChange={(v) => update("neighborhood", v)} autoComplete="address-level3" />
+                <Field className="md:col-span-3" label="Complemento" value={form.complement} onChange={(v) => update("complement", v)} placeholder="Apto, bloco, ref." />
               </div>
             </Section>
 
@@ -141,10 +218,10 @@ function CheckoutPage() {
 
               {method === "card" && (
                 <div className="grid md:grid-cols-2 gap-4">
-                  <Field label="Número do cartão" name="cardNumber" required className="md:col-span-2" />
-                  <Field label="Nome impresso" name="cardName" required className="md:col-span-2" />
-                  <Field label="Validade (MM/AA)" name="cardExp" required />
-                  <Field label="CVV" name="cardCvv" required />
+                  <Field className="md:col-span-2" label="Número do cartão" value={form.cardNumber} onChange={(v) => update("cardNumber", maskCard(v))} error={errors.cardNumber} placeholder="0000 0000 0000 0000" inputMode="numeric" autoComplete="cc-number" />
+                  <Field className="md:col-span-2" label="Nome impresso" value={form.cardName} onChange={(v) => update("cardName", v.toUpperCase())} error={errors.cardName} autoComplete="cc-name" />
+                  <Field label="Validade (MM/AA)" value={form.cardExp} onChange={(v) => update("cardExp", maskCardExp(v))} error={errors.cardExp} placeholder="MM/AA" inputMode="numeric" autoComplete="cc-exp" />
+                  <Field label="CVV" value={form.cardCvv} onChange={(v) => update("cardCvv", maskCVV(v))} error={errors.cardCvv} placeholder="123" inputMode="numeric" autoComplete="cc-csc" />
                 </div>
               )}
               {method === "pix" && (
@@ -164,7 +241,6 @@ function CheckoutPage() {
             </Section>
           </div>
 
-          {/* Summary */}
           <aside className="bg-card border border-border rounded-lg p-6 h-fit sticky top-32">
             <h2 className="font-black text-xl mb-5" style={{ fontFamily: "Playfair Display, serif" }}>Seu pedido</h2>
             <ul className="space-y-3 mb-4 max-h-64 overflow-y-auto">
@@ -212,16 +288,29 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
-function Field({ label, name, type = "text", required, className = "" }: { label: string; name: string; type?: string; required?: boolean; className?: string }) {
+type FieldProps = {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  onBlur?: () => void;
+  error?: string;
+  className?: string;
+} & Omit<InputHTMLAttributes<HTMLInputElement>, "value" | "onChange" | "onBlur" | "className">;
+
+function Field({ label, value, onChange, onBlur, error, className = "", ...rest }: FieldProps) {
   return (
-    <label className={`block ${className}`}>
-      <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{label}{required && " *"}</span>
+    <label className={`block ${className}`} data-error={error ? "true" : undefined}>
+      <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{label}</span>
       <input
-        name={name}
-        type={type}
-        required={required}
-        className="mt-1 w-full border border-border rounded-md px-3 py-2.5 text-sm bg-background outline-none focus:ring-2 focus:ring-accent"
+        {...rest}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onBlur={onBlur}
+        className={`mt-1 w-full border rounded-md px-3 py-2.5 text-sm bg-background outline-none focus:ring-2 transition ${
+          error ? "border-destructive focus:ring-destructive/40" : "border-border focus:ring-accent"
+        }`}
       />
+      {error && <span className="text-xs text-destructive mt-1 block">{error}</span>}
     </label>
   );
 }
