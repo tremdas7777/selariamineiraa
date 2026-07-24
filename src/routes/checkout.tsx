@@ -210,10 +210,9 @@ function CheckoutPage() {
             )}
 
             <Section title={selaItems.length > 0 ? "4. Pagamento" : "3. Pagamento"}>
-              <div className="grid grid-cols-3 gap-3 mb-5">
-                <PayOption current={method} value="pix" onSelect={setMethod} icon={QrCode} label="PIX" hint="5% off" />
+              <div className="grid grid-cols-2 gap-3 mb-5">
+                <PayOption current={method} value="pix" onSelect={setMethod} icon={QrCode} label="PIX" hint="10% off" />
                 <PayOption current={method} value="card" onSelect={setMethod} icon={CreditCard} label="Cartão" hint="até 10x" />
-                <PayOption current={method} value="boleto" onSelect={setMethod} icon={Barcode} label="Boleto" hint="à vista" />
               </div>
 
               {method === "card" && (
