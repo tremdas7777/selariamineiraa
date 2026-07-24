@@ -52,7 +52,7 @@ function ProductPage() {
   const { add } = useCart();
   const navigate = useNavigate();
 
-  const parcela = product.priceNumber / 10;
+  const parcela = product.priceNumber / 12;
   const pixPrice = product.priceNumber * 0.9;
   const related = products.filter((p) => p.slug !== product.slug).slice(0, 4);
 
@@ -104,7 +104,7 @@ function ProductPage() {
               {formatBRL(product.priceNumber)}
             </div>
             <div className="text-sm text-muted-foreground mt-1">
-              ou <strong>10x de {formatBRL(parcela)}</strong> sem juros
+              ou <strong>12x de {formatBRL(parcela)}</strong>
             </div>
             <div className="inline-block mt-2 bg-accent/10 text-accent-foreground px-3 py-1 rounded text-xs font-bold">
               <span className="text-accent">{formatBRL(pixPrice)}</span> à vista no PIX (10% off)
@@ -152,7 +152,7 @@ function ProductPage() {
             {[
               { icon: ShieldCheck, t: "Compra segura" },
               { icon: Truck, t: "Enviamos p/ todo Brasil" },
-              { icon: CreditCard, t: "Até 10x sem juros" },
+              { icon: CreditCard, t: "Até 12x" },
             ].map((b) => (
               <div key={b.t} className="flex flex-col items-center text-center gap-1 p-3 bg-secondary/50 rounded-md">
                 <b.icon className="size-5 text-accent" />

@@ -72,7 +72,7 @@ function CategoryPage() {
         ) : (
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
             {items.map((p: Product) => {
-              const parcela = p.priceNumber / 10;
+              const parcela = p.priceNumber / 12;
               return (
                 <div key={p.slug} className="group bg-card rounded-lg overflow-hidden border border-border hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col">
                   <Link to="/produto/$slug" params={{ slug: p.slug }} className="relative aspect-square bg-secondary overflow-hidden block">
@@ -89,7 +89,7 @@ function CategoryPage() {
                     <div className="mb-3">
                       {p.oldPrice && <div className="text-xs text-muted-foreground line-through">R$ {p.oldPrice}</div>}
                       <div className="text-xl font-black text-primary" style={{ fontFamily: "Playfair Display, serif" }}>{formatBRL(p.priceNumber)}</div>
-                      <div className="text-xs text-muted-foreground">ou 10x de {formatBRL(parcela)} sem juros</div>
+                      <div className="text-xs text-muted-foreground">ou 12x de {formatBRL(parcela)}</div>
                     </div>
                     <div className="mt-auto grid grid-cols-2 gap-2">
                       <Link to="/produto/$slug" params={{ slug: p.slug }} className="text-center bg-secondary text-foreground text-xs font-bold uppercase tracking-wider py-2.5 rounded hover:bg-foreground hover:text-background transition">Detalhes</Link>

@@ -28,7 +28,7 @@ const tiposSela = selaTipos
 const beneficios = [
   { icon: ShieldCheck, titulo: "Loja 100% segura", sub: "selo de segurança" },
   { icon: Truck, titulo: "Entregamos", sub: "em todo o Brasil" },
-  { icon: CreditCard, titulo: "Parcele suas compras", sub: "em até 10x sem juros" },
+  { icon: CreditCard, titulo: "Parcele suas compras", sub: "em até 12x" },
   { icon: Tag, titulo: "10% de desconto", sub: "no PIX" },
 ];
 
@@ -175,7 +175,7 @@ function Home() {
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
             {destaques.map((p) => {
-              const parcela = p.priceNumber / 10;
+              const parcela = p.priceNumber / 12;
               return (
                 <div key={p.slug} className="group bg-card rounded-lg overflow-hidden border border-border hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col">
                   <Link to="/produto/$slug" params={{ slug: p.slug }} className="relative aspect-square bg-secondary overflow-hidden block">
@@ -194,7 +194,7 @@ function Home() {
                     <div className="mb-3">
                       {p.oldPrice && <div className="text-xs text-muted-foreground line-through">R$ {p.oldPrice}</div>}
                       <div className="text-xl font-black text-primary" style={{ fontFamily: "Playfair Display, serif" }}>{formatBRL(p.priceNumber)}</div>
-                      <div className="text-xs text-muted-foreground">ou 10x de {formatBRL(parcela)} sem juros</div>
+                      <div className="text-xs text-muted-foreground">ou 12x de {formatBRL(parcela)}</div>
                     </div>
                     <div className="mt-auto flex flex-col sm:flex-row items-stretch gap-2">
                       <Link
