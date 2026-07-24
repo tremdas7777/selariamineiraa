@@ -34,12 +34,23 @@ function inferCategory(name: string): CategorySlug {
 }
 
 const seen = new Map<string, number>();
+const DISCOUNT = 0.5;
 export const products: Product[] = (raw as RawProduct[]).map((p) => {
   let slug = slugify(p.name);
   const count = seen.get(slug) ?? 0;
   seen.set(slug, count + 1);
   if (count > 0) slug = `${slug}-${count + 1}`;
-  return { ...p, slug, priceNumber: parseBRL(p.price), category: inferCategory(p.name) };
+  const original = parseBRL(p.price);
+  const discounted = Math.round(original * (1 - DISCOUNT) * 100) / 100;
+  const priceStr = discounted.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return {
+    ...p,
+    price: priceStr,
+    oldPrice: p.oldPrice ?? p.price,
+    slug,
+    priceNumber: discounted,
+    category: inferCategory(p.name),
+  };
 });
 
 export const getProduct = (slug: string) => products.find((p) => p.slug === slug);
