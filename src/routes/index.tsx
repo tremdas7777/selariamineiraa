@@ -43,12 +43,17 @@ function Home() {
         <div className="absolute inset-0 flex items-center">
           <div className="max-w-7xl mx-auto px-4 md:px-8 w-full">
             <div className="max-w-xl text-background">
-              <span className="inline-block px-3 py-1 bg-accent text-accent-foreground text-[11px] font-bold uppercase tracking-widest rounded-sm mb-5">Tradição Mineira desde 1984</span>
+              <span className="inline-flex items-center gap-2 px-3 py-1 bg-accent text-accent-foreground text-[11px] font-black uppercase tracking-widest rounded-sm mb-5 animate-pulse">
+                <Tag className="size-3" /> Promoção Especial • 50% OFF
+              </span>
               <h1 className="text-4xl md:text-6xl leading-[1.05] font-black mb-5" style={{ fontFamily: "Playfair Display, serif" }}>
                 Selas de <span className="text-accent italic">respeito</span>,<br />couro de verdade.
               </h1>
-              <p className="text-base md:text-lg opacity-90 mb-8 max-w-md">
+              <p className="text-base md:text-lg opacity-90 mb-4 max-w-md">
                 Arreios, selas e artigos em couro legítimo — feitos à mão nas Vertentes de Minas Gerais para quem entende do trecho.
+              </p>
+              <p className="inline-block bg-background/95 text-foreground text-sm md:text-base font-bold px-4 py-2 rounded-md mb-8">
+                🔥 Toda a loja com <span className="text-accent">50% de desconto</span> + 10% no PIX
               </p>
               <div className="flex flex-wrap gap-3">
                 <a href="#produtos" className="inline-flex items-center gap-2 bg-accent text-accent-foreground px-6 py-3 rounded-md font-bold hover:brightness-110 transition">

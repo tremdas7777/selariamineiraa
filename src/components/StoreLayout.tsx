@@ -23,13 +23,18 @@ export function StoreHeader() {
 
   return (
     <>
+      <div className="bg-accent text-accent-foreground text-[11px] sm:text-sm font-bold">
+        <div className="max-w-7xl mx-auto px-4 py-2 flex items-center justify-center gap-2 text-center uppercase tracking-wider">
+          <Tag className="size-4 shrink-0" />
+          <span>Promoção Especial • 50% OFF em toda a loja</span>
+          <span className="opacity-60">|</span>
+          <span>+10% no PIX</span>
+        </div>
+      </div>
       <div className="bg-primary text-primary-foreground text-[11px] sm:text-xs font-medium">
         <div className="max-w-7xl mx-auto px-4 py-2 flex items-center justify-center gap-2 text-center">
           <span>Frete grátis para todo Brasil acima de R$ 499</span>
-          <span className="opacity-60">|</span>
-          <span>10% OFF no PIX</span>
         </div>
-
       </div>
 
       <header className="bg-background text-foreground sticky top-0 z-40 border-b-2 border-accent shadow-lg">
