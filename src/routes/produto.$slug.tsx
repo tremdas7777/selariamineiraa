@@ -50,6 +50,7 @@ function ProductPage() {
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
   const { add } = useCart();
+  const navigate = useNavigate();
 
   const parcela = product.priceNumber / 10;
   const pixPrice = product.priceNumber * 0.9;
@@ -59,6 +60,11 @@ function ProductPage() {
     add({ slug: product.slug, name: product.name, image: product.image, price: product.priceNumber }, qty);
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
+  };
+
+  const handleBuyNow = () => {
+    add({ slug: product.slug, name: product.name, image: product.image, price: product.priceNumber }, qty);
+    navigate({ to: "/checkout" });
   };
 
   return (
