@@ -50,8 +50,9 @@ export const createPayin = createServerFn({ method: "POST" })
   .inputValidator((data: CreatePayinInput) => data)
   .handler(async ({ data }) => {
     const ip = getRequestIP({ xForwardedFor: true }) || "0.0.0.0";
-    const host = getRequestHost() || "selariamineiraa.lovable.app";
-    const origin = `https://${host}`;
+    const host = getRequestHost() || "";
+    const isPublicHost = host && !host.includes("localhost") && !host.startsWith("127.") && !host.includes(":");
+    const origin = isPublicHost ? `https://${host}` : "https://selariamineiraa.lovable.app";
     const payload = {
       ...data,
       payerIp: ip,
