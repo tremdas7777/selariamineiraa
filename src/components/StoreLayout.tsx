@@ -23,13 +23,6 @@ export function StoreHeader() {
 
   return (
     <>
-      <div className="bg-accent text-accent-foreground text-[11px] sm:text-sm font-bold">
-        <div className="max-w-7xl mx-auto px-4 py-2 flex items-center justify-center gap-2 text-center uppercase tracking-wider">
-          <Tag className="size-4 shrink-0" />
-          <span>50% OFF + 10% no PIX</span>
-        </div>
-      </div>
-
       <header className="bg-background text-foreground sticky top-0 z-40 border-b-2 border-accent shadow-lg">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 md:py-4 grid grid-cols-[auto_1fr_auto] items-center gap-3 md:gap-5">
           {/* LEFT: menu (mobile) + contact/user (desktop xl) */}
