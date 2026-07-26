@@ -26,9 +26,7 @@ export function StoreHeader() {
       <div className="bg-accent text-accent-foreground text-[11px] sm:text-sm font-bold">
         <div className="max-w-7xl mx-auto px-4 py-2 flex items-center justify-center gap-2 text-center uppercase tracking-wider">
           <Tag className="size-4 shrink-0" />
-          <span>Promoção Especial • 50% OFF em toda a loja</span>
-          <span className="opacity-60">|</span>
-          <span>+10% no PIX</span>
+          <span>50% OFF + 10% no PIX</span>
         </div>
       </div>
 
