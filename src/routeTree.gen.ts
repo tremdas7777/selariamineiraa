@@ -16,6 +16,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as SelasTipoRouteImport } from './routes/selas.$tipo'
 import { Route as ProdutoSlugRouteImport } from './routes/produto.$slug'
 import { Route as CategoriaSlugRouteImport } from './routes/categoria.$slug'
+import { Route as ApiPublicLegacyWebhookRouteImport } from './routes/api/public/legacy-webhook'
 
 const CheckoutRoute = CheckoutRouteImport.update({
   id: '/checkout',
@@ -52,6 +53,11 @@ const CategoriaSlugRoute = CategoriaSlugRouteImport.update({
   path: '/categoria/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicLegacyWebhookRoute = ApiPublicLegacyWebhookRouteImport.update({
+  id: '/api/public/legacy-webhook',
+  path: '/api/public/legacy-webhook',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -61,6 +67,7 @@ export interface FileRoutesByFullPath {
   '/categoria/$slug': typeof CategoriaSlugRoute
   '/produto/$slug': typeof ProdutoSlugRoute
   '/selas/$tipo': typeof SelasTipoRoute
+  '/api/public/legacy-webhook': typeof ApiPublicLegacyWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -70,6 +77,7 @@ export interface FileRoutesByTo {
   '/categoria/$slug': typeof CategoriaSlugRoute
   '/produto/$slug': typeof ProdutoSlugRoute
   '/selas/$tipo': typeof SelasTipoRoute
+  '/api/public/legacy-webhook': typeof ApiPublicLegacyWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -80,6 +88,7 @@ export interface FileRoutesById {
   '/categoria/$slug': typeof CategoriaSlugRoute
   '/produto/$slug': typeof ProdutoSlugRoute
   '/selas/$tipo': typeof SelasTipoRoute
+  '/api/public/legacy-webhook': typeof ApiPublicLegacyWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -91,6 +100,7 @@ export interface FileRouteTypes {
     | '/categoria/$slug'
     | '/produto/$slug'
     | '/selas/$tipo'
+    | '/api/public/legacy-webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -100,6 +110,7 @@ export interface FileRouteTypes {
     | '/categoria/$slug'
     | '/produto/$slug'
     | '/selas/$tipo'
+    | '/api/public/legacy-webhook'
   id:
     | '__root__'
     | '/'
@@ -109,6 +120,7 @@ export interface FileRouteTypes {
     | '/categoria/$slug'
     | '/produto/$slug'
     | '/selas/$tipo'
+    | '/api/public/legacy-webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -119,6 +131,7 @@ export interface RootRouteChildren {
   CategoriaSlugRoute: typeof CategoriaSlugRoute
   ProdutoSlugRoute: typeof ProdutoSlugRoute
   SelasTipoRoute: typeof SelasTipoRoute
+  ApiPublicLegacyWebhookRoute: typeof ApiPublicLegacyWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -172,6 +185,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CategoriaSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/legacy-webhook': {
+      id: '/api/public/legacy-webhook'
+      path: '/api/public/legacy-webhook'
+      fullPath: '/api/public/legacy-webhook'
+      preLoaderRoute: typeof ApiPublicLegacyWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -183,6 +203,7 @@ const rootRouteChildren: RootRouteChildren = {
   CategoriaSlugRoute: CategoriaSlugRoute,
   ProdutoSlugRoute: ProdutoSlugRoute,
   SelasTipoRoute: SelasTipoRoute,
+  ApiPublicLegacyWebhookRoute: ApiPublicLegacyWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

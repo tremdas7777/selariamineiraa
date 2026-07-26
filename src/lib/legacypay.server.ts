@@ -4,8 +4,9 @@
 export type LegacyPayinResult = {
   ok: boolean;
   status: number;
-  data: Record<string, unknown> & { id?: string; message?: string; code?: string };
+  data: unknown;
 };
+
 
 export async function callLegacyPayin(payload: unknown): Promise<LegacyPayinResult> {
   const pk = process.env.LEGACY_PAY_PUBLIC_KEY;
@@ -28,8 +29,9 @@ export async function callLegacyPayin(payload: unknown): Promise<LegacyPayinResu
       body: JSON.stringify(payload),
     });
     const text = await res.text();
-    let data: Record<string, unknown> = {};
+    let data: unknown = {};
     try { data = text ? JSON.parse(text) : {}; } catch { data = { raw: text }; }
+
     return { ok: res.ok, status: res.status, data };
   } catch (err) {
     return {
