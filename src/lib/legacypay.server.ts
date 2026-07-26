@@ -1,11 +1,14 @@
 // Server-only helper for Legacy Ecom Brasil payment gateway.
 // Docs: https://developers.legacyecombrasil.com/docs/inicio-rapido
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type LegacyPayinResult = {
   ok: boolean;
   status: number;
-  data: unknown;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data: any;
 };
+
 
 
 export async function callLegacyPayin(payload: unknown): Promise<LegacyPayinResult> {
@@ -29,8 +32,10 @@ export async function callLegacyPayin(payload: unknown): Promise<LegacyPayinResu
       body: JSON.stringify(payload),
     });
     const text = await res.text();
-    let data: unknown = {};
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let data: any = {};
     try { data = text ? JSON.parse(text) : {}; } catch { data = { raw: text }; }
+
 
     return { ok: res.ok, status: res.status, data };
   } catch (err) {
