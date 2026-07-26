@@ -1,9 +1,11 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useMemo, useState, type FormEvent, type InputHTMLAttributes } from "react";
-import { CreditCard, QrCode, Lock, Check, Sparkles, Loader2 } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { useEffect, useMemo, useRef, useState, type FormEvent, type InputHTMLAttributes } from "react";
+import { CreditCard, QrCode, Lock, Check, Sparkles, Loader2, Copy, AlertCircle } from "lucide-react";
 import { StoreLayout } from "@/components/StoreLayout";
 import { useCart } from "@/lib/cart";
 import { formatBRL } from "@/lib/products";
+import { createPayin, getLegacyPublicKey } from "@/lib/legacypay.functions";
 import {
   maskCPF, maskPhone, maskCEP, maskCard, maskCardExp, maskCVV,
   isValidCPF, isValidCEP, isValidPhone, fetchCEP,
@@ -24,6 +26,8 @@ type PayMethod = "pix" | "card";
 
 const ENGRAVING_PRICE = 49.9;
 const isSela = (name: string) => /\bsela\b/i.test(name);
+const SDK_URL = "https://api.legacyecombrasil.com/checkout/sdk/legacy-pay.js";
+const API_BASE = "https://api.legacyecombrasil.com";
 
 type FormState = {
   email: string; phone: string; name: string; cpf: string;
@@ -39,16 +43,49 @@ const initialForm: FormState = {
   cardNumber: "", cardName: "", cardExp: "", cardCvv: "",
 };
 
+type PixResult = { id: string; qrcode: string; amount: number };
+type CardResult = { id: string; status: string; amount: number };
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+declare global { interface Window { LegacyPay?: any } }
+
+let sdkPromise: Promise<void> | null = null;
+function loadSdk(): Promise<void> {
+  if (typeof window === "undefined") return Promise.resolve();
+  if (window.LegacyPay) return Promise.resolve();
+  if (sdkPromise) return sdkPromise;
+  sdkPromise = new Promise<void>((resolve, reject) => {
+    const s = document.createElement("script");
+    s.src = SDK_URL;
+    s.async = true;
+    s.onload = () => resolve();
+    s.onerror = () => reject(new Error("Falha ao carregar SDK Legacy Pay"));
+    document.head.appendChild(s);
+  });
+  return sdkPromise;
+}
+
 function CheckoutPage() {
   const { items, subtotal, count, clear } = useCart();
   const navigate = useNavigate();
   const [method, setMethod] = useState<PayMethod>("pix");
-  const [done, setDone] = useState(false);
   const [engravings, setEngravings] = useState<Record<string, string>>({});
   const [form, setForm] = useState<FormState>(initialForm);
   const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({});
   const [cepLoading, setCepLoading] = useState(false);
   const [cepError, setCepError] = useState<string | null>(null);
+  const [installments, setInstallments] = useState(1);
+
+  const [processing, setProcessing] = useState(false);
+  const [gatewayError, setGatewayError] = useState<string | null>(null);
+  const [pixResult, setPixResult] = useState<PixResult | null>(null);
+  const [cardResult, setCardResult] = useState<CardResult | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  const createPayinFn = useServerFn(createPayin);
+  const getPkFn = useServerFn(getLegacyPublicKey);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const clientRef = useRef<any>(null);
 
   const selaItems = useMemo(() => items.filter((i) => isSela(i.name)), [items]);
   const engravingCount = selaItems.reduce(
@@ -59,6 +96,18 @@ function CheckoutPage() {
   const frete = subtotal > 0 && subtotal < 399 ? 29.9 : 0;
   const baseTotal = subtotal + frete + engravingTotal;
   const total = method === "pix" ? baseTotal * 0.9 : baseTotal;
+  const amountCents = Math.round(total * 100);
+
+  // Prewarm SDK when card selected
+  useEffect(() => {
+    if (method !== "card") return;
+    loadSdk().then(async () => {
+      if (clientRef.current) return;
+      const { publicKey } = await getPkFn();
+      if (!publicKey) return;
+      clientRef.current = window.LegacyPay!.init({ publicKey, apiBaseUrl: API_BASE });
+    }).catch(() => { /* handled at submit */ });
+  }, [method, getPkFn]);
 
   const update = (k: keyof FormState, v: string) => {
     setForm((p) => ({ ...p, [k]: v }));
@@ -101,31 +150,199 @@ function CheckoutPage() {
     return Object.keys(e).length === 0;
   };
 
-  const handleSubmit = (ev: FormEvent) => {
+  const buildCustomer = () => {
+    const phone = form.phone.replace(/\D/g, "");
+    return {
+      name: form.name.trim(),
+      document: form.cpf.replace(/\D/g, ""),
+      email: form.email.trim(),
+      phone: phone.startsWith("55") ? phone : `55${phone}`,
+      address: {
+        street: form.address.trim(),
+        number: form.number.trim(),
+        zipCode: form.cep,
+        city: form.city.trim(),
+        state: form.uf.trim().toUpperCase(),
+        complement: form.complement.trim() || undefined,
+        neighborhood: form.neighborhood.trim() || undefined,
+      },
+    };
+  };
+
+  const buildItems = () => items.map((i) => ({
+    title: i.name,
+    quantity: i.qty,
+    unitPrice: Math.round(i.price * 100),
+  }));
+
+  const referenceId = useMemo(
+    () => `pedido-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`,
+    [],
+  );
+
+  const handleSubmit = async (ev: FormEvent) => {
     ev.preventDefault();
+    setGatewayError(null);
     if (!validate()) {
       const first = document.querySelector<HTMLElement>("[data-error='true']");
       first?.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
     }
-    // TODO: integrar gateway de pagamento (Stripe / Mercado Pago / Pagar.me)
-    setDone(true);
-    clear();
-    setTimeout(() => navigate({ to: "/" }), 4000);
+    setProcessing(true);
+    try {
+      const customer = buildCustomer();
+      const its = buildItems();
+
+      if (method === "pix") {
+        const res = await createPayinFn({
+          data: {
+            paymentMethod: "PIX",
+            amount: amountCents,
+            referenceId,
+            customer,
+            items: its,
+            isPhysicalProduct: true,
+          },
+        });
+        if (!res.ok) {
+          const msg = (res.data && (res.data.message || res.data.code)) || `Erro ${res.status}`;
+          throw new Error(String(msg));
+        }
+        const qrcode: string = res.data?.pix?.qrcode ?? "";
+        if (!qrcode) throw new Error("Gateway não retornou o código PIX.");
+        setPixResult({ id: res.data.id, qrcode, amount: res.data.amount });
+        clear();
+      } else {
+        // CARTÃO — usa SDK legacy-pay para tokenizar + 3DS
+        await loadSdk();
+        if (!clientRef.current) {
+          const { publicKey } = await getPkFn();
+          if (!publicKey) throw new Error("Chave pública indisponível.");
+          clientRef.current = window.LegacyPay!.init({ publicKey, apiBaseUrl: API_BASE });
+        }
+        const [expMonth, expYearShort] = form.cardExp.split("/");
+        const expirationYear = expYearShort.length === 2 ? `20${expYearShort}` : expYearShort;
+
+        const prepared = await clientRef.current.prepareCardPayment({
+          amount: amountCents,
+          referenceId,
+          installments,
+          card: {
+            holderName: form.cardName.trim(),
+            number: form.cardNumber.replace(/\s/g, ""),
+            expirationMonth: expMonth,
+            expirationYear,
+            cvv: form.cardCvv,
+          },
+          customer,
+        });
+
+        const res = await createPayinFn({
+          data: {
+            paymentMethod: "CREDIT_CARD",
+            amount: amountCents,
+            referenceId,
+            customer,
+            items: its,
+            isPhysicalProduct: true,
+            card: {
+              token: prepared.payinCard.token,
+              installments: prepared.payinCard.installments ?? installments,
+              threeDSecure: prepared.payinCard.threeDSecure,
+            },
+            antifraud: prepared.antifraud?.sessionId
+              ? { sessionId: prepared.antifraud.sessionId }
+              : undefined,
+          },
+        });
+        if (!res.ok) {
+          const msg = (res.data && (res.data.message || res.data.code)) || `Erro ${res.status}`;
+          throw new Error(String(msg));
+        }
+        setCardResult({
+          id: res.data.id,
+          status: res.data.status,
+          amount: res.data.amount,
+        });
+        if (res.data.status === "APPROVED") clear();
+      }
+    } catch (err) {
+      const e = err as { code?: string; message?: string };
+      if (e.code === "THREEDS_FAILED") {
+        setGatewayError("Falha na autenticação 3DS do banco. Tente outro cartão.");
+      } else {
+        setGatewayError(e.message || "Erro ao processar pagamento.");
+      }
+    } finally {
+      setProcessing(false);
+    }
   };
 
-  if (done) {
+  // ==== TELAS DE RESULTADO ====
+
+  if (pixResult) {
+    const qrImg = `https://api.qrserver.com/v1/create-qr-code/?size=280x280&data=${encodeURIComponent(pixResult.qrcode)}`;
+    return (
+      <StoreLayout>
+        <div className="max-w-xl mx-auto px-4 py-16 text-center">
+          <div className="size-16 rounded-full bg-accent/10 grid place-items-center mx-auto mb-5">
+            <QrCode className="size-8 text-accent" />
+          </div>
+          <h1 className="text-3xl font-black mb-2" style={{ fontFamily: "Playfair Display, serif" }}>Pague com PIX</h1>
+          <p className="text-muted-foreground mb-6">Aponte a câmera do seu banco ou copie o código abaixo. O pedido é confirmado automaticamente.</p>
+          <div className="bg-card border border-border rounded-lg p-6 inline-flex flex-col items-center gap-4">
+            <img src={qrImg} alt="QR Code PIX" width={280} height={280} className="rounded bg-white p-2" />
+            <div className="text-2xl font-black text-primary" style={{ fontFamily: "Playfair Display, serif" }}>
+              {formatBRL(pixResult.amount / 100)}
+            </div>
+            <div className="w-full">
+              <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground text-left mb-1">PIX Copia e Cola</div>
+              <div className="flex gap-2">
+                <input readOnly value={pixResult.qrcode} className="flex-1 border border-border rounded px-2 py-2 text-xs bg-background truncate" />
+                <button
+                  type="button"
+                  onClick={() => { navigator.clipboard.writeText(pixResult.qrcode); setCopied(true); setTimeout(() => setCopied(false), 2000); }}
+                  className="inline-flex items-center gap-1 bg-primary text-primary-foreground px-3 py-2 rounded text-xs font-bold"
+                >
+                  <Copy className="size-3.5" /> {copied ? "Copiado" : "Copiar"}
+                </button>
+              </div>
+            </div>
+          </div>
+          <p className="text-xs text-muted-foreground mt-6">Pedido: <span className="font-mono">{pixResult.id}</span></p>
+          <Link to="/" className="mt-6 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">Voltar para a loja</Link>
+        </div>
+      </StoreLayout>
+    );
+  }
+
+  if (cardResult) {
+    const approved = cardResult.status === "APPROVED";
+    const pending = cardResult.status === "PENDING" || cardResult.status === "PENDING_3DS";
     return (
       <StoreLayout>
         <div className="max-w-xl mx-auto px-4 py-24 text-center">
-          <div className="size-20 rounded-full bg-accent/10 grid place-items-center mx-auto mb-6">
-            <Check className="size-10 text-accent" />
+          <div className={`size-20 rounded-full grid place-items-center mx-auto mb-6 ${approved ? "bg-accent/10" : pending ? "bg-secondary" : "bg-destructive/10"}`}>
+            {approved
+              ? <Check className="size-10 text-accent" />
+              : pending
+                ? <Loader2 className="size-10 text-muted-foreground animate-spin" />
+                : <AlertCircle className="size-10 text-destructive" />}
           </div>
-          <h1 className="text-3xl font-black mb-3" style={{ fontFamily: "Playfair Display, serif" }}>Pedido recebido!</h1>
+          <h1 className="text-3xl font-black mb-3" style={{ fontFamily: "Playfair Display, serif" }}>
+            {approved ? "Pagamento aprovado!" : pending ? "Aguardando confirmação" : "Pagamento recusado"}
+          </h1>
           <p className="text-muted-foreground mb-6">
-            Obrigado pela compra. Assim que o gateway de pagamento estiver conectado, você receberá as instruções por e-mail.
+            {approved
+              ? "Obrigado pela compra. Você receberá a nota fiscal e o rastreio por e-mail."
+              : pending
+                ? "Sua transação está em análise. Assim que confirmada, avisaremos por e-mail."
+                : "Não foi possível processar seu cartão. Tente novamente com outro método."}
           </p>
-          <Link to="/" className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-md font-bold">Voltar para a loja</Link>
+          <p className="text-xs text-muted-foreground mb-6">Pedido: <span className="font-mono">{cardResult.id}</span></p>
+          <Link to="/" className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-md font-bold">
+            {approved ? "Voltar para a loja" : "Tentar novamente"}
+          </Link>
         </div>
       </StoreLayout>
     );
@@ -221,6 +438,20 @@ function CheckoutPage() {
                   <Field className="md:col-span-2" label="Nome impresso" value={form.cardName} onChange={(v) => update("cardName", v.toUpperCase())} error={errors.cardName} autoComplete="cc-name" />
                   <Field label="Validade (MM/AA)" value={form.cardExp} onChange={(v) => update("cardExp", maskCardExp(v))} error={errors.cardExp} placeholder="MM/AA" inputMode="numeric" autoComplete="cc-exp" />
                   <Field label="CVV" value={form.cardCvv} onChange={(v) => update("cardCvv", maskCVV(v))} error={errors.cardCvv} placeholder="123" inputMode="numeric" autoComplete="cc-csc" />
+                  <label className="md:col-span-2 block">
+                    <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Parcelas</span>
+                    <select
+                      value={installments}
+                      onChange={(e) => setInstallments(Number(e.target.value))}
+                      className="mt-1 w-full border border-border rounded-md px-3 py-2.5 text-sm bg-background outline-none focus:ring-2 focus:ring-accent"
+                    >
+                      {Array.from({ length: 12 }, (_, i) => i + 1).map((n) => (
+                        <option key={n} value={n}>
+                          {n}x de {formatBRL(total / n)}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
                 </div>
               )}
               {method === "pix" && (
@@ -228,10 +459,16 @@ function CheckoutPage() {
                   Ao confirmar, geraremos o QR Code PIX. Você tem 30 minutos para pagar.
                 </div>
               )}
-              {method === "card" && null}
+
+              {gatewayError && (
+                <div className="mt-4 flex items-start gap-2 bg-destructive/10 text-destructive text-sm p-3 rounded-md">
+                  <AlertCircle className="size-4 mt-0.5 shrink-0" />
+                  <span>{gatewayError}</span>
+                </div>
+              )}
 
               <div className="mt-4 flex items-center gap-2 text-xs text-muted-foreground">
-                <Lock className="size-3.5 text-accent" /> Ambiente 100% seguro. Gateway de pagamento será integrado em breve.
+                <Lock className="size-3.5 text-accent" /> Pagamento processado com criptografia via Legacy Ecom. Seus dados nunca ficam em nossos servidores.
               </div>
             </Section>
           </div>
@@ -264,8 +501,14 @@ function CheckoutPage() {
               <span className="font-bold">Total</span>
               <span className="text-2xl font-black text-primary" style={{ fontFamily: "Playfair Display, serif" }}>{formatBRL(total)}</span>
             </div>
-            <button type="submit" className="mt-6 w-full inline-flex items-center justify-center gap-2 bg-accent text-accent-foreground px-6 py-4 rounded-md font-black uppercase tracking-wider text-sm hover:brightness-110 transition">
-              <Lock className="size-4" /> Confirmar pedido
+            <button
+              type="submit"
+              disabled={processing}
+              className="mt-6 w-full inline-flex items-center justify-center gap-2 bg-accent text-accent-foreground px-6 py-4 rounded-md font-black uppercase tracking-wider text-sm hover:brightness-110 transition disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {processing
+                ? <><Loader2 className="size-4 animate-spin" /> Processando…</>
+                : <><Lock className="size-4" /> Confirmar pedido</>}
             </button>
           </aside>
         </form>
