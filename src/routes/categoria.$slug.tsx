@@ -42,7 +42,13 @@ export const Route = createFileRoute("/categoria/$slug")({
 function CategoryPage() {
   const { category, items } = Route.useLoaderData();
   const { add } = useCart();
+  const navigate = useNavigate();
   const others = categories.filter((c) => c.slug !== category.slug);
+
+  const handleBuy = (p: Product) => {
+    add({ slug: p.slug, name: p.name, image: p.image, price: p.priceNumber });
+    navigate({ to: "/carrinho" });
+  };
 
   return (
     <StoreLayout>
