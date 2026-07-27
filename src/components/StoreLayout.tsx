@@ -16,6 +16,7 @@ export function StoreHeader() {
       <Link to="/categoria/$slug" params={{ slug: "selas" }} onClick={() => setMenuOpen(false)} className="hover:text-accent transition">Selas</Link>
       <Link to="/categoria/$slug" params={{ slug: "arreios-cabecadas" }} onClick={() => setMenuOpen(false)} className="hover:text-accent transition">Arreios</Link>
       <Link to="/categoria/$slug" params={{ slug: "cabrestos" }} onClick={() => setMenuOpen(false)} className="hover:text-accent transition">Cabrestos</Link>
+      <Link to="/categoria/$slug" params={{ slug: "botinas" }} onClick={() => setMenuOpen(false)} className="hover:text-accent transition">Botinas</Link>
       <Link to="/categoria/$slug" params={{ slug: "acessorios" }} onClick={() => setMenuOpen(false)} className="hover:text-accent transition">Acessórios</Link>
       <Link to="/carrinho" onClick={() => setMenuOpen(false)} className="hover:text-accent transition">Carrinho</Link>
     </>
