@@ -3,7 +3,7 @@ import raw from "@/data/products.json";
 export type RawProduct = { name: string; image: string; price: string; oldPrice: string | null };
 export type Product = RawProduct & { slug: string; priceNumber: number; category: CategorySlug };
 
-export type CategorySlug = "selas" | "arreios-cabecadas" | "cabrestos" | "esporas-freios" | "mantas-perneiras" | "acessorios";
+export type CategorySlug = "selas" | "arreios-cabecadas" | "cabrestos" | "esporas-freios" | "mantas-perneiras" | "botinas" | "acessorios";
 
 export const categories: { slug: CategorySlug; name: string; description: string }[] = [
   { slug: "selas", name: "Selas", description: "Selas mangalarga, australianas, americanas e de prova de laço." },
@@ -11,6 +11,7 @@ export const categories: { slug: CategorySlug; name: string; description: string
   { slug: "cabrestos", name: "Cabrestos", description: "Cabrestos trançados, de corda, corrente e inox." },
   { slug: "esporas-freios", name: "Esporas & Freios", description: "Esporas, bridões e freios em inox." },
   { slug: "mantas-perneiras", name: "Mantas & Perneiras", description: "Mantas de pelúcia, perneiras e proteções em couro." },
+  { slug: "botinas", name: "Botinas", description: "Botinas masculinas em couro vaqueta, nobuck e modelos country." },
   { slug: "acessorios", name: "Acessórios", description: "Suportes, raspadeiras e demais acessórios para o cavaleiro." },
 ];
 
@@ -25,6 +26,7 @@ export const formatBRL = (n: number) =>
 
 function inferCategory(name: string): CategorySlug {
   const n = name.toLowerCase();
+  if (/botina|bota\b/.test(n)) return "botinas";
   if (/\bsela\b/.test(n)) return "selas";
   if (/cabresto/.test(n)) return "cabrestos";
   if (/cabe[çc]ada|peitoral|arreio/.test(n)) return "arreios-cabecadas";
