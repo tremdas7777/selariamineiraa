@@ -52,9 +52,7 @@ function Home() {
               <p className="text-base md:text-lg opacity-90 mb-4 max-w-md">
                 Arreios, selas e artigos em couro legítimo — feitos à mão nas Vertentes de Minas Gerais para quem entende do trecho.
               </p>
-              <p className="inline-block bg-background/95 text-foreground text-sm md:text-base font-bold px-4 py-2 rounded-md mb-8">
-                🔥 Toda a loja com <span className="text-accent">50% de desconto</span> + 10% no PIX
-              </p>
+              <div className="mb-8" />
               <div className="flex flex-wrap gap-3">
                 <a href="#produtos" className="inline-flex items-center gap-2 bg-accent text-accent-foreground px-6 py-3 rounded-md font-bold hover:brightness-110 transition">
                   Confira aqui <ChevronRight className="size-4" />
