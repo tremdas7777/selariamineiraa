@@ -26,6 +26,7 @@ export const formatBRL = (n: number) =>
 
 function inferCategory(name: string): CategorySlug {
   const n = name.toLowerCase();
+  if (/botina|bota\b/.test(n)) return "botinas";
   if (/\bsela\b/.test(n)) return "selas";
   if (/cabresto/.test(n)) return "cabrestos";
   if (/cabe[çc]ada|peitoral|arreio/.test(n)) return "arreios-cabecadas";
