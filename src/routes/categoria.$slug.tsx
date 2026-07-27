@@ -1,4 +1,4 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { ChevronRight, Star } from "lucide-react";
 import { StoreLayout } from "@/components/StoreLayout";
 import { getCategory, getProductsByCategory, categories, formatBRL, type CategorySlug, type Product } from "@/lib/products";
@@ -42,7 +42,13 @@ export const Route = createFileRoute("/categoria/$slug")({
 function CategoryPage() {
   const { category, items } = Route.useLoaderData();
   const { add } = useCart();
+  const navigate = useNavigate();
   const others = categories.filter((c) => c.slug !== category.slug);
+
+  const handleBuy = (p: Product) => {
+    add({ slug: p.slug, name: p.name, image: p.image, price: p.priceNumber });
+    navigate({ to: "/carrinho" });
+  };
 
   return (
     <StoreLayout>
@@ -93,7 +99,7 @@ function CategoryPage() {
                     </div>
                     <div className="mt-auto grid grid-cols-2 gap-2">
                       <Link to="/produto/$slug" params={{ slug: p.slug }} className="text-center bg-secondary text-foreground text-xs font-bold uppercase tracking-wider py-2.5 rounded hover:bg-foreground hover:text-background transition">Detalhes</Link>
-                      <button onClick={() => add({ slug: p.slug, name: p.name, image: p.image, price: p.priceNumber })} className="bg-primary text-primary-foreground text-xs font-bold uppercase tracking-wider py-2.5 rounded hover:bg-accent transition">Comprar</button>
+                      <button type="button" onClick={() => handleBuy(p)} className="bg-primary text-primary-foreground text-xs font-bold uppercase tracking-wider py-2.5 rounded hover:bg-accent transition">Comprar</button>
                     </div>
                   </div>
                 </div>
