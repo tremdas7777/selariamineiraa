@@ -1,4 +1,4 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { ChevronRight, Star } from "lucide-react";
 import { StoreLayout } from "@/components/StoreLayout";
 import { getCategory, getProductsByCategory, categories, formatBRL, type CategorySlug, type Product } from "@/lib/products";
