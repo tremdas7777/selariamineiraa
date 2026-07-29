@@ -396,34 +396,26 @@ function CheckoutPage() {
 
             {selaItems.length > 0 && (
               <Section title="3. Personalização da sela">
-                <div className="flex items-start gap-3 mb-4 text-sm text-muted-foreground">
-                  <Sparkles className="size-5 text-accent shrink-0 mt-0.5" />
-                  <p>
-                    Grave o nome do cavaleiro, do haras ou uma inscrição no couro da sua sela.
-                    Feito à mão por nossos mestres seleiros. <strong className="text-foreground">+{formatBRL(ENGRAVING_PRICE)}</strong> por sela personalizada
-                    (deixe em branco para não personalizar).
-                  </p>
-                </div>
+                <p className="mb-4 text-sm text-muted-foreground">
+                  Gravação no couro — <strong className="text-foreground">grátis</strong>. Deixe em branco para não personalizar.
+                </p>
                 <div className="space-y-3">
                   {selaItems.map((i) => (
-                    <label key={i.slug} className="flex items-center gap-3 p-3 border border-border rounded-md">
-                      <img src={i.image} alt="" className="size-12 rounded object-cover bg-secondary shrink-0" />
-                      <div className="flex-1 min-w-0">
-                        <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground truncate">{i.name}</div>
-                        <input
-                          type="text"
-                          maxLength={24}
-                          value={engravings[i.slug] ?? ""}
-                          onChange={(e) => setEngravings((p) => ({ ...p, [i.slug]: e.target.value }))}
-                          placeholder="Ex.: João Silva — Haras Boa Vista"
-                          className="mt-1 w-full border-b border-border bg-transparent py-1 text-sm outline-none focus:border-accent"
-                        />
-                        <div className="text-[10px] text-muted-foreground mt-0.5">Máx. 24 caracteres · letras maiúsculas em relevo</div>
-                      </div>
+                    <label key={i.slug} className="block">
+                      <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground truncate">{i.name}</div>
+                      <input
+                        type="text"
+                        maxLength={24}
+                        value={engravings[i.slug] ?? ""}
+                        onChange={(e) => setEngravings((p) => ({ ...p, [i.slug]: e.target.value }))}
+                        placeholder="Nome ou inscrição (máx. 24)"
+                        className="mt-1 w-full border-b border-border bg-transparent py-1 text-sm outline-none focus:border-accent"
+                      />
                     </label>
                   ))}
                 </div>
               </Section>
+
             )}
 
             <Section title={selaItems.length > 0 ? "4. Pagamento" : "3. Pagamento"}>
