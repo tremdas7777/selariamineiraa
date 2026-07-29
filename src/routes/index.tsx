@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ShieldCheck, Truck, CreditCard, Tag, MessageCircle, Star, ChevronRight, ShoppingBag } from "lucide-react";
+import { ShieldCheck, Truck, CreditCard, Tag, Phone, Star, ChevronRight, ShoppingBag } from "lucide-react";
 import heroSaddle from "@/assets/hero-saddle.jpg";
 import { StoreLayout } from "@/components/StoreLayout";
 import { products, formatBRL, categories, getProductsByCategory, selaTipos, getSelasByTipo, type SelaTipo, type CategorySlug } from "@/lib/products";
@@ -261,7 +261,7 @@ function Home() {
             {[
               { nome: "Tiago Rezende", cidade: "Uberaba/MG", texto: "Já cruzei três estados com a sela que comprei aqui. Conforto pro cavalo e durabilidade que impressiona." },
               { nome: "João do Prado", cidade: "Barbacena/MG", texto: "O pesponto da cabeçada é obra de arte. Orgulho do artesanato mineiro em cada detalhe." },
-              { nome: "Ricardo Mendes", cidade: "Lavras/MG", texto: "Minha bota aguenta barro, sol e continua impecável. Atendimento no WhatsApp nota dez." },
+              { nome: "Ricardo Mendes", cidade: "Lavras/MG", texto: "Minha bota aguenta barro, sol e continua impecável. Atendimento nota dez." },
             ].map((d) => (
               <div key={d.nome} className="bg-card p-8 rounded-lg border border-border text-left shadow-sm">
                 <div className="flex gap-0.5 mb-4 text-accent">
