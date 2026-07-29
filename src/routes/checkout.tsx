@@ -490,9 +490,10 @@ function CheckoutPage() {
             <div className="space-y-2 text-sm border-t border-border pt-4">
               <div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><span>{formatBRL(subtotal)}</span></div>
               <div className="flex justify-between"><span className="text-muted-foreground">Frete</span><span>{frete === 0 ? <span className="text-accent font-bold">Grátis</span> : formatBRL(frete)}</span></div>
-              {engravingTotal > 0 && (
-                <div className="flex justify-between"><span className="text-muted-foreground">Personalização ({engravingCount}×)</span><span>{formatBRL(engravingTotal)}</span></div>
+              {engravingCount > 0 && (
+                <div className="flex justify-between"><span className="text-muted-foreground">Personalização ({engravingCount}×)</span><span className="text-accent font-bold">Grátis</span></div>
               )}
+
               {method === "pix" && (
                 <div className="flex justify-between text-accent font-bold"><span>Desconto PIX (10%)</span><span>-{formatBRL(baseTotal * 0.1)}</span></div>
               )}
