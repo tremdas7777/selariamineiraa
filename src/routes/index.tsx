@@ -278,16 +278,16 @@ function Home() {
         </div>
       </section>
 
-      {/* WhatsApp CTA */}
+      {/* CTA de contato */}
       <section className="py-14 bg-accent text-accent-foreground">
         <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
           <div>
             <h3 className="text-2xl md:text-3xl font-black mb-1" style={{ fontFamily: "Playfair Display, serif" }}>Fale direto com a selaria</h3>
-            <p className="opacity-90">Dúvidas sobre produtos, encomendas ou frete? Estamos à disposição.</p>
+            <p className="opacity-90">Dúvidas sobre produtos, encomendas ou frete? Entre em contato pelo telefone ou e-mail.</p>
           </div>
-          <a href="https://wa.me/5532999627541" className="inline-flex items-center gap-3 bg-[#25D366] text-white px-7 py-4 rounded-md font-bold shadow-lg hover:brightness-110 transition">
-            <MessageCircle className="size-5" />
-            WhatsApp (32) 99962-7541
+          <a href="tel:+5532999627541" className="inline-flex items-center gap-3 bg-background text-foreground px-7 py-4 rounded-md font-bold shadow-lg hover:bg-background/90 transition">
+            <Phone className="size-5" />
+            Ligar (32) 99962-7541
           </a>
         </div>
       </section>

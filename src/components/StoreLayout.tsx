@@ -207,15 +207,14 @@ export function StoreFooter() {
             <li><a href="/#produtos" className="hover:text-accent transition">Acessórios</a></li>
           </ul>
         </div>
-        <div>
-          <h4 className="font-bold text-background mb-4 text-sm uppercase tracking-widest">Contato</h4>
-          <ul className="space-y-3 text-sm">
-            <li className="flex items-start gap-2"><MapPin className="size-4 text-accent mt-0.5 shrink-0" /> Vertentes, Minas Gerais</li>
-            <li className="flex items-start gap-2"><Phone className="size-4 text-accent mt-0.5 shrink-0" /> (32) 99962-7541</li>
-            <li className="flex items-start gap-2"><Mail className="size-4 text-accent mt-0.5 shrink-0" /> contato@selariamineira.com.br</li>
-            <li className="flex items-start gap-2"><MessageCircle className="size-4 text-accent mt-0.5 shrink-0" /> WhatsApp 24h</li>
-          </ul>
-        </div>
+          <div>
+            <h4 className="font-bold text-background mb-4 text-sm uppercase tracking-widest">Contato</h4>
+            <ul className="space-y-3 text-sm">
+              <li className="flex items-start gap-2"><MapPin className="size-4 text-accent mt-0.5 shrink-0" /> Vertentes, Minas Gerais</li>
+              <li className="flex items-start gap-2"><Phone className="size-4 text-accent mt-0.5 shrink-0" /> (32) 99962-7541</li>
+              <li className="flex items-start gap-2"><Mail className="size-4 text-accent mt-0.5 shrink-0" /> contato@selariamineira.com.br</li>
+            </ul>
+          </div>
       </div>
       <div className="border-t border-background/10 pt-6">
         <div className="max-w-7xl mx-auto px-4 text-center text-xs">
