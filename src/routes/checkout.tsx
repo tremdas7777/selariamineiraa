@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useRef, useState, type FormEvent, type InputHTMLAttributes } from "react";
-import { CreditCard, QrCode, Lock, Check, Sparkles, Loader2, Copy, AlertCircle } from "lucide-react";
+import { CreditCard, QrCode, Lock, Check, Loader2, Copy, AlertCircle } from "lucide-react";
 import { StoreLayout } from "@/components/StoreLayout";
 import { useCart } from "@/lib/cart";
 import { formatBRL } from "@/lib/products";
@@ -24,7 +24,7 @@ export const Route = createFileRoute("/checkout")({
 
 type PayMethod = "pix" | "card";
 
-const ENGRAVING_PRICE = 49.9;
+const ENGRAVING_PRICE = 0;
 const isSela = (name: string) => /\bsela\b/i.test(name);
 const SDK_URL = "https://api.legacyecombrasil.com/checkout/sdk/legacy-pay.js";
 const API_BASE = "https://api.legacyecombrasil.com";
@@ -396,34 +396,26 @@ function CheckoutPage() {
 
             {selaItems.length > 0 && (
               <Section title="3. Personalização da sela">
-                <div className="flex items-start gap-3 mb-4 text-sm text-muted-foreground">
-                  <Sparkles className="size-5 text-accent shrink-0 mt-0.5" />
-                  <p>
-                    Grave o nome do cavaleiro, do haras ou uma inscrição no couro da sua sela.
-                    Feito à mão por nossos mestres seleiros. <strong className="text-foreground">+{formatBRL(ENGRAVING_PRICE)}</strong> por sela personalizada
-                    (deixe em branco para não personalizar).
-                  </p>
-                </div>
+                <p className="mb-4 text-sm text-muted-foreground">
+                  Gravação no couro — <strong className="text-foreground">grátis</strong>. Deixe em branco para não personalizar.
+                </p>
                 <div className="space-y-3">
                   {selaItems.map((i) => (
-                    <label key={i.slug} className="flex items-center gap-3 p-3 border border-border rounded-md">
-                      <img src={i.image} alt="" className="size-12 rounded object-cover bg-secondary shrink-0" />
-                      <div className="flex-1 min-w-0">
-                        <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground truncate">{i.name}</div>
-                        <input
-                          type="text"
-                          maxLength={24}
-                          value={engravings[i.slug] ?? ""}
-                          onChange={(e) => setEngravings((p) => ({ ...p, [i.slug]: e.target.value }))}
-                          placeholder="Ex.: João Silva — Haras Boa Vista"
-                          className="mt-1 w-full border-b border-border bg-transparent py-1 text-sm outline-none focus:border-accent"
-                        />
-                        <div className="text-[10px] text-muted-foreground mt-0.5">Máx. 24 caracteres · letras maiúsculas em relevo</div>
-                      </div>
+                    <label key={i.slug} className="block">
+                      <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground truncate">{i.name}</div>
+                      <input
+                        type="text"
+                        maxLength={24}
+                        value={engravings[i.slug] ?? ""}
+                        onChange={(e) => setEngravings((p) => ({ ...p, [i.slug]: e.target.value }))}
+                        placeholder="Nome ou inscrição (máx. 24)"
+                        className="mt-1 w-full border-b border-border bg-transparent py-1 text-sm outline-none focus:border-accent"
+                      />
                     </label>
                   ))}
                 </div>
               </Section>
+
             )}
 
             <Section title={selaItems.length > 0 ? "4. Pagamento" : "3. Pagamento"}>
@@ -490,9 +482,10 @@ function CheckoutPage() {
             <div className="space-y-2 text-sm border-t border-border pt-4">
               <div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><span>{formatBRL(subtotal)}</span></div>
               <div className="flex justify-between"><span className="text-muted-foreground">Frete</span><span>{frete === 0 ? <span className="text-accent font-bold">Grátis</span> : formatBRL(frete)}</span></div>
-              {engravingTotal > 0 && (
-                <div className="flex justify-between"><span className="text-muted-foreground">Personalização ({engravingCount}×)</span><span>{formatBRL(engravingTotal)}</span></div>
+              {engravingCount > 0 && (
+                <div className="flex justify-between"><span className="text-muted-foreground">Personalização ({engravingCount}×)</span><span className="text-accent font-bold">Grátis</span></div>
               )}
+
               {method === "pix" && (
                 <div className="flex justify-between text-accent font-bold"><span>Desconto PIX (10%)</span><span>-{formatBRL(baseTotal * 0.1)}</span></div>
               )}
