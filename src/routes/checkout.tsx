@@ -24,7 +24,7 @@ export const Route = createFileRoute("/checkout")({
 
 type PayMethod = "pix" | "card";
 
-const ENGRAVING_PRICE = 49.9;
+const ENGRAVING_PRICE = 0;
 const isSela = (name: string) => /\bsela\b/i.test(name);
 const SDK_URL = "https://api.legacyecombrasil.com/checkout/sdk/legacy-pay.js";
 const API_BASE = "https://api.legacyecombrasil.com";
