@@ -182,6 +182,34 @@ function CheckoutPage() {
     [],
   );
 
+  const recordOrderFn = useServerFn(recordOrder);
+
+  useEffect(() => {
+    track("checkout", { label: `${items.length} itens` });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  /** Registra o pedido no painel admin sem interromper o fluxo do cliente. */
+  const pushOrder = (id: string, status: "PENDING" | "APPROVED" | "FAILED", pm: "PIX" | "CREDIT_CARD") => {
+    void recordOrderFn({
+      data: {
+        id,
+        referenceId,
+        status,
+        method: pm,
+        amount: amountCents,
+        customerName: `${form.firstName} ${form.lastName}`.trim(),
+        customerEmail: form.email,
+        customerPhone: form.phone,
+        city: form.city,
+        uf: form.uf,
+        items: buildItems(),
+      },
+    }).catch(() => undefined);
+    if (status === "APPROVED") track("paid", { value: amountCents });
+  };
+
+
   const handleSubmit = async (ev: FormEvent) => {
     ev.preventDefault();
     setGatewayError(null);
