@@ -6,6 +6,8 @@ import { StoreLayout } from "@/components/StoreLayout";
 import { useCart } from "@/lib/cart";
 import { formatBRL } from "@/lib/products";
 import { createPayin, getLegacyPublicKey } from "@/lib/legacypay.functions";
+import { recordOrder } from "@/lib/admin.functions";
+import { track } from "@/lib/track";
 import {
   maskCPF, maskPhone, maskCEP, maskCard, maskCardExp, maskCVV,
   isValidCPF, isValidCEP, isValidPhone, fetchCEP,
@@ -180,6 +182,34 @@ function CheckoutPage() {
     [],
   );
 
+  const recordOrderFn = useServerFn(recordOrder);
+
+  useEffect(() => {
+    track("checkout", { label: `${items.length} itens` });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  /** Registra o pedido no painel admin sem interromper o fluxo do cliente. */
+  const pushOrder = (id: string, status: "PENDING" | "APPROVED" | "FAILED", pm: "PIX" | "CREDIT_CARD") => {
+    void recordOrderFn({
+      data: {
+        id,
+        referenceId,
+        status,
+        method: pm,
+        amount: amountCents,
+        customerName: form.name.trim(),
+        customerEmail: form.email,
+        customerPhone: form.phone,
+        city: form.city,
+        uf: form.uf,
+        items: buildItems(),
+      },
+    }).catch(() => undefined);
+    if (status === "APPROVED") track("paid", { value: amountCents });
+  };
+
+
   const handleSubmit = async (ev: FormEvent) => {
     ev.preventDefault();
     setGatewayError(null);
@@ -211,6 +241,7 @@ function CheckoutPage() {
         const qrcode: string = res.data?.pix?.qrcode ?? "";
         if (!qrcode) throw new Error("Gateway não retornou o código PIX.");
         setPixResult({ id: res.data.id, qrcode, amount: res.data.amount });
+        pushOrder(String(res.data.id), "PENDING", "PIX");
         clear();
       } else {
         // CARTÃO — usa SDK legacy-pay para tokenizar + 3DS
@@ -264,6 +295,7 @@ function CheckoutPage() {
           status: res.data.status,
           amount: res.data.amount,
         });
+        pushOrder(String(res.data.id), res.data.status === "APPROVED" ? "APPROVED" : "PENDING", "CREDIT_CARD");
         if (res.data.status === "APPROVED") clear();
       }
     } catch (err) {
