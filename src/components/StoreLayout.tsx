@@ -1,6 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { Search, ShoppingBag, User, Phone, Tag, Menu, X, MessageCircle, Instagram, Facebook, Youtube, MapPin, Mail } from "lucide-react";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
+import { useRouterState } from "@tanstack/react-router";
+import { track } from "@/lib/track";
 import { useCart } from "@/lib/cart";
 import logo from "@/assets/logo-selaria.png";
 
@@ -226,6 +228,14 @@ export function StoreFooter() {
 }
 
 export function StoreLayout({ children }: { children: ReactNode }) {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+
+  useEffect(() => {
+    if (pathname.startsWith("/produto/")) track("product", { label: decodeURIComponent(pathname.replace("/produto/", "")) });
+    else if (pathname.startsWith("/carrinho")) track("cart");
+    else if (!pathname.startsWith("/checkout")) track("visit");
+  }, [pathname]);
+
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col" style={{ fontFamily: "Inter, sans-serif" }}>
       <StoreHeader />
