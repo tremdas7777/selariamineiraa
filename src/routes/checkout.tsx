@@ -6,6 +6,8 @@ import { StoreLayout } from "@/components/StoreLayout";
 import { useCart } from "@/lib/cart";
 import { formatBRL } from "@/lib/products";
 import { createPayin, getLegacyPublicKey } from "@/lib/legacypay.functions";
+import { recordOrder } from "@/lib/admin.functions";
+import { track } from "@/lib/track";
 import {
   maskCPF, maskPhone, maskCEP, maskCard, maskCardExp, maskCVV,
   isValidCPF, isValidCEP, isValidPhone, fetchCEP,
