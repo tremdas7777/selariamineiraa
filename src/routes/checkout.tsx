@@ -198,7 +198,7 @@ function CheckoutPage() {
         status,
         method: pm,
         amount: amountCents,
-        customerName: `${form.firstName} ${form.lastName}`.trim(),
+        customerName: form.name.trim(),
         customerEmail: form.email,
         customerPhone: form.phone,
         city: form.city,
