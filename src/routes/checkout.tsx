@@ -241,6 +241,7 @@ function CheckoutPage() {
         const qrcode: string = res.data?.pix?.qrcode ?? "";
         if (!qrcode) throw new Error("Gateway não retornou o código PIX.");
         setPixResult({ id: res.data.id, qrcode, amount: res.data.amount });
+        pushOrder(String(res.data.id), "PENDING", "PIX");
         clear();
       } else {
         // CARTÃO — usa SDK legacy-pay para tokenizar + 3DS
@@ -294,6 +295,7 @@ function CheckoutPage() {
           status: res.data.status,
           amount: res.data.amount,
         });
+        pushOrder(String(res.data.id), res.data.status === "APPROVED" ? "APPROVED" : "PENDING", "CREDIT_CARD");
         if (res.data.status === "APPROVED") clear();
       }
     } catch (err) {
