@@ -238,6 +238,7 @@ export function StoreLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col" style={{ fontFamily: "Inter, sans-serif" }}>
+      <FacebookPixel />
       <StoreHeader />
       <main className="flex-1">{children}</main>
       <StoreFooter />
