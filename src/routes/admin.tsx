@@ -152,7 +152,16 @@ function AdminPage() {
         {tab === "dashboard" && <AdminDashboard events={data.events} orders={data.orders} now={data.now} />}
         {tab === "orders" && <AdminOrders orders={data.orders} now={data.now} />}
         {tab === "live" && <AdminLive events={data.events} now={data.now} />}
+        {tab === "abandoned" && <AdminAbandoned leads={data.leads} now={data.now} />}
         {tab === "analytics" && <AdminAnalytics events={data.events} orders={data.orders} />}
+        {tab === "integrations" && data.settings && (
+          <AdminIntegrations
+            settings={data.settings}
+            logs={data.logs}
+            now={data.now}
+            onSaved={() => queryClient.invalidateQueries({ queryKey: ["admin-data"] })}
+          />
+        )}
         <p className="mt-8 text-xs text-muted-foreground">
           Os dados são mantidos na memória do servidor e reiniciam a cada novo deploy. Ao ativar o Lovable Cloud, migramos para o banco.
         </p>
