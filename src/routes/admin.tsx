@@ -28,13 +28,15 @@ export const Route = createFileRoute("/admin")({
   component: AdminPage,
 });
 
-type Tab = "dashboard" | "orders" | "live" | "analytics";
+type Tab = "dashboard" | "orders" | "live" | "abandoned" | "analytics" | "integrations";
 
 const TABS: { id: Tab; label: string; icon: typeof Radio }[] = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
   { id: "orders", label: "Pedidos", icon: ListOrdered },
   { id: "live", label: "Live view", icon: Radio },
+  { id: "abandoned", label: "Carrinhos abandonados", icon: ShoppingCart },
   { id: "analytics", label: "Análises", icon: BarChart3 },
+  { id: "integrations", label: "Integrações", icon: Plug },
 ];
 
 function AdminPage() {
