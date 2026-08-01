@@ -4,6 +4,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { useRouterState } from "@tanstack/react-router";
 import { track } from "@/lib/track";
 import { useCart } from "@/lib/cart";
+import { FacebookPixel } from "@/components/FacebookPixel";
 import logo from "@/assets/logo-selaria.png";
 
 export function StoreHeader() {
