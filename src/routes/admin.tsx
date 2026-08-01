@@ -2,12 +2,14 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
-import { LayoutDashboard, ListOrdered, Radio, BarChart3, LogOut, RefreshCw } from "lucide-react";
+import { LayoutDashboard, ListOrdered, Radio, BarChart3, LogOut, RefreshCw, Plug, ShoppingCart } from "lucide-react";
 import { adminLogin, adminLogout, getAdminData } from "@/lib/admin.functions";
 import { AdminDashboard } from "@/components/admin/AdminDashboard";
 import { AdminOrders } from "@/components/admin/AdminOrders";
 import { AdminLive } from "@/components/admin/AdminLive";
 import { AdminAnalytics } from "@/components/admin/AdminAnalytics";
+import { AdminAbandoned } from "@/components/admin/AdminAbandoned";
+import { AdminIntegrations } from "@/components/admin/AdminIntegrations";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin")({
@@ -26,13 +28,15 @@ export const Route = createFileRoute("/admin")({
   component: AdminPage,
 });
 
-type Tab = "dashboard" | "orders" | "live" | "analytics";
+type Tab = "dashboard" | "orders" | "live" | "abandoned" | "analytics" | "integrations";
 
 const TABS: { id: Tab; label: string; icon: typeof Radio }[] = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
   { id: "orders", label: "Pedidos", icon: ListOrdered },
   { id: "live", label: "Live view", icon: Radio },
+  { id: "abandoned", label: "Carrinhos abandonados", icon: ShoppingCart },
   { id: "analytics", label: "Análises", icon: BarChart3 },
+  { id: "integrations", label: "Integrações", icon: Plug },
 ];
 
 function AdminPage() {
@@ -148,7 +152,16 @@ function AdminPage() {
         {tab === "dashboard" && <AdminDashboard events={data.events} orders={data.orders} now={data.now} />}
         {tab === "orders" && <AdminOrders orders={data.orders} now={data.now} />}
         {tab === "live" && <AdminLive events={data.events} now={data.now} />}
+        {tab === "abandoned" && <AdminAbandoned leads={data.leads} now={data.now} />}
         {tab === "analytics" && <AdminAnalytics events={data.events} orders={data.orders} />}
+        {tab === "integrations" && data.settings && (
+          <AdminIntegrations
+            settings={data.settings}
+            logs={data.logs}
+            now={data.now}
+            onSaved={() => queryClient.invalidateQueries({ queryKey: ["admin-data"] })}
+          />
+        )}
         <p className="mt-8 text-xs text-muted-foreground">
           Os dados são mantidos na memória do servidor e reiniciam a cada novo deploy. Ao ativar o Lovable Cloud, migramos para o banco.
         </p>

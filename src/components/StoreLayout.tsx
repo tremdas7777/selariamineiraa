@@ -4,6 +4,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { useRouterState } from "@tanstack/react-router";
 import { track } from "@/lib/track";
 import { useCart } from "@/lib/cart";
+import { FacebookPixel } from "@/components/FacebookPixel";
 import logo from "@/assets/logo-selaria.png";
 
 export function StoreHeader() {
@@ -238,6 +239,7 @@ export function StoreLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col" style={{ fontFamily: "Inter, sans-serif" }}>
+      <FacebookPixel />
       <StoreHeader />
       <main className="flex-1">{children}</main>
       <StoreFooter />

@@ -6,8 +6,8 @@ import { StoreLayout } from "@/components/StoreLayout";
 import { useCart } from "@/lib/cart";
 import { formatBRL } from "@/lib/products";
 import { createPayin, getLegacyPublicKey } from "@/lib/legacypay.functions";
-import { recordOrder } from "@/lib/admin.functions";
-import { track } from "@/lib/track";
+import { recordOrder, saveLead } from "@/lib/admin.functions";
+import { track, getVisitorId } from "@/lib/track";
 import {
   maskCPF, maskPhone, maskCEP, maskCard, maskCardExp, maskCVV,
   isValidCPF, isValidCEP, isValidPhone, fetchCEP,
@@ -110,6 +110,28 @@ function CheckoutPage() {
       clientRef.current = window.LegacyPay!.init({ publicKey, apiBaseUrl: API_BASE });
     }).catch(() => { /* handled at submit */ });
   }, [method, getPkFn]);
+
+  // Carrinho abandonado: salva os dados parciais de contato (debounce de 1,2s).
+  const saveLeadFn = useServerFn(saveLead);
+  useEffect(() => {
+    const hasContact = form.email.includes("@") || form.phone.replace(/\D/g, "").length >= 10;
+    if (!hasContact || items.length === 0) return;
+    const timer = window.setTimeout(() => {
+      void saveLeadFn({
+        data: {
+          visitorId: getVisitorId(),
+          name: form.name,
+          email: form.email,
+          phone: form.phone,
+          city: form.city,
+          uf: form.uf,
+          amount: amountCents,
+          items: items.map((i) => ({ title: i.name, quantity: i.qty, unitPrice: Math.round(i.price * 100) })),
+        },
+      }).catch(() => undefined);
+    }, 1200);
+    return () => window.clearTimeout(timer);
+  }, [form.email, form.phone, form.name, form.city, form.uf, items, amountCents, saveLeadFn]);
 
   const update = (k: keyof FormState, v: string) => {
     setForm((p) => ({ ...p, [k]: v }));
