@@ -2,12 +2,14 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
-import { LayoutDashboard, ListOrdered, Radio, BarChart3, LogOut, RefreshCw } from "lucide-react";
+import { LayoutDashboard, ListOrdered, Radio, BarChart3, LogOut, RefreshCw, Plug, ShoppingCart } from "lucide-react";
 import { adminLogin, adminLogout, getAdminData } from "@/lib/admin.functions";
 import { AdminDashboard } from "@/components/admin/AdminDashboard";
 import { AdminOrders } from "@/components/admin/AdminOrders";
 import { AdminLive } from "@/components/admin/AdminLive";
 import { AdminAnalytics } from "@/components/admin/AdminAnalytics";
+import { AdminAbandoned } from "@/components/admin/AdminAbandoned";
+import { AdminIntegrations } from "@/components/admin/AdminIntegrations";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin")({
