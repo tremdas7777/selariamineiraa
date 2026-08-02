@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ShieldCheck, Truck, CreditCard, Tag, Phone, Star, ChevronRight, ShoppingBag } from "lucide-react";
+import { ShieldCheck, Truck, CreditCard, Tag, Mail, Star, ChevronRight, ShoppingBag } from "lucide-react";
 import heroSaddle from "@/assets/hero-saddle.jpg";
 import { StoreLayout } from "@/components/StoreLayout";
 import { products, formatBRL, categories, getProductsByCategory, selaTipos, getSelasByTipo, type SelaTipo, type CategorySlug } from "@/lib/products";
