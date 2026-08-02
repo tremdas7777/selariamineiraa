@@ -48,12 +48,13 @@ export function StoreHeader() {
               </div>
             </div>
             <div className="hidden xl:flex items-center gap-3 text-xs">
-              <User className="size-5 text-accent shrink-0" />
+              <ShieldCheck className="size-5 text-accent shrink-0" />
               <div className="leading-tight">
-                <div className="opacity-70">Olá, Bem-vindo(a)</div>
-                <div className="font-bold">Entre ou Cadastre-se</div>
+                <div className="opacity-70">Compra sem cadastro</div>
+                <div className="font-bold">Checkout rápido</div>
               </div>
             </div>
+
           </div>
 
           {/* CENTER: brand lockup */}
