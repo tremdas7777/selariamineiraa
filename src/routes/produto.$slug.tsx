@@ -106,8 +106,8 @@ function ProductPage() {
             <div className="text-sm text-muted-foreground mt-1">
               ou <strong>12x de {formatBRL(parcela)}</strong>
             </div>
-            <div className="inline-block mt-2 bg-accent/10 text-accent-foreground px-3 py-1 rounded text-xs font-bold">
-              <span className="text-accent">{formatBRL(pixPrice)}</span> à vista no PIX (10% off)
+            <div className="inline-block mt-2 bg-primary text-primary-foreground px-3 py-1 rounded text-xs font-bold">
+              <span className="text-primary-foreground">{formatBRL(pixPrice)}</span> à vista no PIX (10% off)
             </div>
           </div>
 
