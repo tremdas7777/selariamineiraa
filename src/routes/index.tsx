@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ShieldCheck, Truck, CreditCard, Tag, Phone, Star, ChevronRight, ShoppingBag } from "lucide-react";
+import { ShieldCheck, Truck, CreditCard, Tag, Mail, Star, ChevronRight, ShoppingBag } from "lucide-react";
 import heroSaddle from "@/assets/hero-saddle.jpg";
 import { StoreLayout } from "@/components/StoreLayout";
 import { products, formatBRL, categories, getProductsByCategory, selaTipos, getSelasByTipo, type SelaTipo, type CategorySlug } from "@/lib/products";
@@ -283,11 +283,11 @@ function Home() {
         <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-6 text-center md:text-left">
           <div>
             <h3 className="text-2xl md:text-3xl font-black mb-1" style={{ fontFamily: "Playfair Display, serif" }}>Fale direto com a selaria</h3>
-            <p className="opacity-90">Dúvidas sobre produtos, encomendas ou frete? Entre em contato pelo telefone ou e-mail.</p>
+            <p className="opacity-90">Dúvidas sobre produtos, encomendas ou frete? Entre em contato por e-mail.</p>
           </div>
-          <a href="tel:+5532999627541" className="inline-flex items-center gap-3 bg-background text-foreground px-7 py-4 rounded-md font-bold shadow-lg hover:bg-background/90 transition">
-            <Phone className="size-5" />
-            Ligar (32) 99962-7541
+          <a href="mailto:contato@selariamineira.com.br" className="inline-flex items-center gap-3 bg-background text-foreground px-7 py-4 rounded-md font-bold shadow-lg hover:bg-background/90 transition">
+            <Mail className="size-5" />
+            Enviar e-mail
           </a>
         </div>
       </section>
