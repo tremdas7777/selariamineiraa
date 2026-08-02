@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Search, ShoppingBag, User, Phone, Tag, Menu, X, MessageCircle, Instagram, Facebook, Youtube, MapPin, Mail } from "lucide-react";
+import { Search, ShoppingBag, ShieldCheck, Phone, Tag, Menu, X, MessageCircle, Instagram, Facebook, Youtube, MapPin, Mail } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { useRouterState } from "@tanstack/react-router";
 import { track } from "@/lib/track";
@@ -48,12 +48,13 @@ export function StoreHeader() {
               </div>
             </div>
             <div className="hidden xl:flex items-center gap-3 text-xs">
-              <User className="size-5 text-accent shrink-0" />
+              <ShieldCheck className="size-5 text-accent shrink-0" />
               <div className="leading-tight">
-                <div className="opacity-70">Olá, Bem-vindo(a)</div>
-                <div className="font-bold">Entre ou Cadastre-se</div>
+                <div className="opacity-70">Compra sem cadastro</div>
+                <div className="font-bold">Checkout rápido</div>
               </div>
             </div>
+
           </div>
 
           {/* CENTER: brand lockup */}
