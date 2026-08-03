@@ -83,7 +83,7 @@ function ProductPage() {
       <section className="max-w-7xl mx-auto px-4 py-10 grid md:grid-cols-2 gap-10">
         {/* Image */}
         <div className="bg-card rounded-lg border border-border overflow-hidden">
-          <img src={product.image} alt={product.name} width={800} height={800} className="w-full aspect-square object-cover" />
+          <img src={product.image} alt={product.name} width={800} height={800} className="w-full aspect-square object-contain bg-secondary p-4" />
         </div>
 
         {/* Info */}
@@ -191,7 +191,7 @@ function ProductPage() {
                 className="group bg-card rounded-lg overflow-hidden border border-border hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
                 <div className="aspect-square bg-secondary overflow-hidden">
-                  <img src={p.image} alt={p.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <img src={p.image} alt={p.name} loading="lazy" className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-500" />
                 </div>
                 <div className="p-4">
                   <h3 className="font-semibold text-sm mb-2 line-clamp-2 min-h-[2.5rem]">{p.name}</h3>

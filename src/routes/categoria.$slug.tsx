@@ -85,7 +85,7 @@ function CategoryPage() {
                     {p.oldPrice && (
                       <span className="absolute top-3 left-3 z-10 bg-accent text-accent-foreground text-[10px] font-bold uppercase px-2 py-1 rounded-sm tracking-wider">Oferta</span>
                     )}
-                    <img src={p.image} alt={p.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <img src={p.image} alt={p.name} loading="lazy" className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-500" />
                   </Link>
                   <div className="p-4 flex flex-col flex-1">
                     <div className="flex gap-0.5 mb-2 text-accent">
