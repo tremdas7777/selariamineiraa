@@ -524,7 +524,7 @@ function CheckoutPage() {
             <ul className="space-y-3 mb-4 max-h-64 overflow-y-auto">
               {items.map((i) => (
                 <li key={i.slug} className="flex gap-3 text-sm">
-                  <img src={i.image} alt="" className="size-12 rounded object-cover bg-secondary shrink-0" />
+                  <img src={i.image} alt="" className="size-12 rounded object-contain bg-secondary shrink-0" />
                   <div className="flex-1 min-w-0">
                     <div className="line-clamp-2 font-medium">{i.name}</div>
                     <div className="text-xs text-muted-foreground">{i.qty} × {formatBRL(i.price)}</div>

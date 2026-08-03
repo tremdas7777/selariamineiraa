@@ -45,7 +45,7 @@ function CartPage() {
             {items.map((item) => (
               <div key={item.slug} className="flex gap-4 bg-card border border-border rounded-lg p-4">
                 <Link to="/produto/$slug" params={{ slug: item.slug }} className="shrink-0">
-                  <img src={item.image} alt={item.name} className="size-24 md:size-28 rounded-md object-cover bg-secondary" />
+                  <img src={item.image} alt={item.name} className="size-24 md:size-28 rounded-md object-contain bg-secondary" />
                 </Link>
                 <div className="flex-1 flex flex-col md:flex-row md:items-center gap-3">
                   <div className="flex-1">
