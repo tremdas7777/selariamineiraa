@@ -29,7 +29,7 @@ export const Route = createFileRoute("/admin")({
   component: AdminPage,
 });
 
-type Tab = "dashboard" | "orders" | "live" | "abandoned" | "analytics" | "integrations";
+type Tab = "dashboard" | "orders" | "live" | "abandoned" | "analytics" | "integrations" | "zedy";
 
 const TABS: { id: Tab; label: string; icon: typeof Radio }[] = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -38,6 +38,7 @@ const TABS: { id: Tab; label: string; icon: typeof Radio }[] = [
   { id: "abandoned", label: "Carrinhos abandonados", icon: ShoppingCart },
   { id: "analytics", label: "Análises", icon: BarChart3 },
   { id: "integrations", label: "Integrações", icon: Plug },
+  { id: "zedy", label: "Checkout Zedy", icon: Store },
 ];
 
 function AdminPage() {
