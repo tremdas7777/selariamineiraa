@@ -164,6 +164,7 @@ function AdminPage() {
             onSaved={() => queryClient.invalidateQueries({ queryKey: ["admin-data"] })}
           />
         )}
+        {tab === "zedy" && <AdminZedy />}
         <p className="mt-8 text-xs text-muted-foreground">
           Os dados são mantidos na memória do servidor e reiniciam a cada novo deploy. Ao ativar o Lovable Cloud, migramos para o banco.
         </p>
