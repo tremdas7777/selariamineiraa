@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
-import { LayoutDashboard, ListOrdered, Radio, BarChart3, LogOut, RefreshCw, Plug, ShoppingCart } from "lucide-react";
+import { LayoutDashboard, ListOrdered, Radio, BarChart3, LogOut, RefreshCw, Plug, ShoppingCart, Store } from "lucide-react";
 import { adminLogin, adminLogout, getAdminData } from "@/lib/admin.functions";
 import { AdminDashboard } from "@/components/admin/AdminDashboard";
 import { AdminOrders } from "@/components/admin/AdminOrders";
@@ -10,6 +10,7 @@ import { AdminLive } from "@/components/admin/AdminLive";
 import { AdminAnalytics } from "@/components/admin/AdminAnalytics";
 import { AdminAbandoned } from "@/components/admin/AdminAbandoned";
 import { AdminIntegrations } from "@/components/admin/AdminIntegrations";
+import { AdminZedy } from "@/components/admin/AdminZedy";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/admin")({
@@ -28,7 +29,7 @@ export const Route = createFileRoute("/admin")({
   component: AdminPage,
 });
 
-type Tab = "dashboard" | "orders" | "live" | "abandoned" | "analytics" | "integrations";
+type Tab = "dashboard" | "orders" | "live" | "abandoned" | "analytics" | "integrations" | "zedy";
 
 const TABS: { id: Tab; label: string; icon: typeof Radio }[] = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -37,6 +38,7 @@ const TABS: { id: Tab; label: string; icon: typeof Radio }[] = [
   { id: "abandoned", label: "Carrinhos abandonados", icon: ShoppingCart },
   { id: "analytics", label: "Análises", icon: BarChart3 },
   { id: "integrations", label: "Integrações", icon: Plug },
+  { id: "zedy", label: "Checkout Zedy", icon: Store },
 ];
 
 function AdminPage() {
@@ -162,6 +164,7 @@ function AdminPage() {
             onSaved={() => queryClient.invalidateQueries({ queryKey: ["admin-data"] })}
           />
         )}
+        {tab === "zedy" && <AdminZedy />}
         <p className="mt-8 text-xs text-muted-foreground">
           Os dados são mantidos na memória do servidor e reiniciam a cada novo deploy. Ao ativar o Lovable Cloud, migramos para o banco.
         </p>

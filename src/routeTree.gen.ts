@@ -17,7 +17,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as SelasTipoRouteImport } from './routes/selas.$tipo'
 import { Route as ProdutoSlugRouteImport } from './routes/produto.$slug'
 import { Route as CategoriaSlugRouteImport } from './routes/categoria.$slug'
-import { Route as ApiPublicLegacyWebhookRouteImport } from './routes/api/public/legacy-webhook'
+import { Route as ApiPublicZedyWebhookRouteImport } from './routes/api/public/zedy-webhook'
 
 const CheckoutRoute = CheckoutRouteImport.update({
   id: '/checkout',
@@ -59,9 +59,9 @@ const CategoriaSlugRoute = CategoriaSlugRouteImport.update({
   path: '/categoria/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiPublicLegacyWebhookRoute = ApiPublicLegacyWebhookRouteImport.update({
-  id: '/api/public/legacy-webhook',
-  path: '/api/public/legacy-webhook',
+const ApiPublicZedyWebhookRoute = ApiPublicZedyWebhookRouteImport.update({
+  id: '/api/public/zedy-webhook',
+  path: '/api/public/zedy-webhook',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -74,7 +74,7 @@ export interface FileRoutesByFullPath {
   '/categoria/$slug': typeof CategoriaSlugRoute
   '/produto/$slug': typeof ProdutoSlugRoute
   '/selas/$tipo': typeof SelasTipoRoute
-  '/api/public/legacy-webhook': typeof ApiPublicLegacyWebhookRoute
+  '/api/public/zedy-webhook': typeof ApiPublicZedyWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -85,7 +85,7 @@ export interface FileRoutesByTo {
   '/categoria/$slug': typeof CategoriaSlugRoute
   '/produto/$slug': typeof ProdutoSlugRoute
   '/selas/$tipo': typeof SelasTipoRoute
-  '/api/public/legacy-webhook': typeof ApiPublicLegacyWebhookRoute
+  '/api/public/zedy-webhook': typeof ApiPublicZedyWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -97,7 +97,7 @@ export interface FileRoutesById {
   '/categoria/$slug': typeof CategoriaSlugRoute
   '/produto/$slug': typeof ProdutoSlugRoute
   '/selas/$tipo': typeof SelasTipoRoute
-  '/api/public/legacy-webhook': typeof ApiPublicLegacyWebhookRoute
+  '/api/public/zedy-webhook': typeof ApiPublicZedyWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -110,7 +110,7 @@ export interface FileRouteTypes {
     | '/categoria/$slug'
     | '/produto/$slug'
     | '/selas/$tipo'
-    | '/api/public/legacy-webhook'
+    | '/api/public/zedy-webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -121,7 +121,7 @@ export interface FileRouteTypes {
     | '/categoria/$slug'
     | '/produto/$slug'
     | '/selas/$tipo'
-    | '/api/public/legacy-webhook'
+    | '/api/public/zedy-webhook'
   id:
     | '__root__'
     | '/'
@@ -132,7 +132,7 @@ export interface FileRouteTypes {
     | '/categoria/$slug'
     | '/produto/$slug'
     | '/selas/$tipo'
-    | '/api/public/legacy-webhook'
+    | '/api/public/zedy-webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -144,7 +144,7 @@ export interface RootRouteChildren {
   CategoriaSlugRoute: typeof CategoriaSlugRoute
   ProdutoSlugRoute: typeof ProdutoSlugRoute
   SelasTipoRoute: typeof SelasTipoRoute
-  ApiPublicLegacyWebhookRoute: typeof ApiPublicLegacyWebhookRoute
+  ApiPublicZedyWebhookRoute: typeof ApiPublicZedyWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -205,11 +205,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CategoriaSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/legacy-webhook': {
-      id: '/api/public/legacy-webhook'
-      path: '/api/public/legacy-webhook'
-      fullPath: '/api/public/legacy-webhook'
-      preLoaderRoute: typeof ApiPublicLegacyWebhookRouteImport
+    '/api/public/zedy-webhook': {
+      id: '/api/public/zedy-webhook'
+      path: '/api/public/zedy-webhook'
+      fullPath: '/api/public/zedy-webhook'
+      preLoaderRoute: typeof ApiPublicZedyWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -224,18 +224,8 @@ const rootRouteChildren: RootRouteChildren = {
   CategoriaSlugRoute: CategoriaSlugRoute,
   ProdutoSlugRoute: ProdutoSlugRoute,
   SelasTipoRoute: SelasTipoRoute,
-  ApiPublicLegacyWebhookRoute: ApiPublicLegacyWebhookRoute,
+  ApiPublicZedyWebhookRoute: ApiPublicZedyWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
