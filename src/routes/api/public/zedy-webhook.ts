@@ -48,7 +48,7 @@ export const Route = createFileRoute("/api/public/zedy-webhook")({
           );
 
           if (body.eventType === "CART_ABANDONED" || body.eventType === "BILLET_CREATED") {
-            upsertLead({
+            await upsertLead({
               visitorId: `zedy-${orderId}`,
               name: String(body.customer?.name ?? ""),
               email: String(body.customer?.email ?? ""),
@@ -76,8 +76,10 @@ export const Route = createFileRoute("/api/public/zedy-webhook")({
             uf: String(body.address?.state ?? ""),
             items,
           };
-          upsertOrder(order);
-          if (order.status === "APPROVED") markLeadConverted(order.customerEmail, order.customerPhone);
+          await upsertOrder(order);
+          if (order.status === "APPROVED") {
+            await markLeadConverted(order.customerEmail, order.customerPhone);
+          }
           await notifyIntegrations(order);
         } catch (err) {
           console.error("[zedy-webhook]", err);

@@ -31,7 +31,7 @@ export const trackEvent = createServerFn({ method: "POST" })
   })
   .handler(async ({ data }) => {
     const { recordEvent } = await import("./admin.server");
-    recordEvent(data);
+    await recordEvent(data);
     return { ok: true as const };
   });
 
@@ -59,8 +59,8 @@ export const recordOrder = createServerFn({ method: "POST" })
       customerEmail: String(data.customerEmail).slice(0, 160),
       items: (data.items ?? []).slice(0, 50),
     };
-    upsertOrder(order);
-    markLeadConverted(order.customerEmail, order.customerPhone);
+    await upsertOrder(order);
+    await markLeadConverted(order.customerEmail, order.customerPhone);
     await notifyIntegrations(order);
     return { ok: true as const };
   });
@@ -91,7 +91,7 @@ export const saveLead = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     if (!data.visitorId) return { ok: false as const };
     const { upsertLead } = await import("./admin.server");
-    upsertLead(data);
+    await upsertLead(data);
     return { ok: true as const };
   });
 
@@ -117,7 +117,7 @@ export const updateSettings = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<{ ok: boolean; settings?: AdminSettings }> => {
     const { isUnlocked, saveSettings } = await import("./admin.server");
     if (!(await isUnlocked())) return { ok: false };
-    const settings = saveSettings({
+    const settings = await saveSettings({
       utmifyEnabled: Boolean(data.utmifyEnabled),
       utmifyToken: String(data.utmifyToken ?? "").slice(0, 400),
       fbPixelEnabled: Boolean(data.fbPixelEnabled),
@@ -131,7 +131,7 @@ export const updateSettings = createServerFn({ method: "POST" })
 /** Somente o ID público do pixel, para carregar o fbq na vitrine. */
 export const getPublicPixel = createServerFn({ method: "GET" }).handler(async () => {
   const { getSettings } = await import("./admin.server");
-  const s = getSettings();
+  const s = await getSettings();
   return { pixelId: s.fbPixelEnabled ? s.fbPixelId : "" };
 });
 
@@ -152,7 +152,7 @@ const EMPTY_DATA = (): AdminData => ({
 export const getAdminData = createServerFn({ method: "GET" }).handler(async (): Promise<AdminData> => {
   const { isUnlocked, snapshot } = await import("./admin.server");
   if (!(await isUnlocked())) return EMPTY_DATA();
-  const snap = snapshot();
+  const snap = await snapshot();
   return {
     authorized: true,
     events: snap.events,
