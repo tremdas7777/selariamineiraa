@@ -230,14 +230,15 @@ export function StoreFooter() {
             <ul className="space-y-3 text-sm">
               <li className="flex items-start gap-2"><MapPin className="size-4 text-accent mt-0.5 shrink-0" /> Vertentes, Minas Gerais</li>
               <li className="flex items-start gap-2"><Mail className="size-4 text-accent mt-0.5 shrink-0" /> contato@selariamineira.com.br</li>
-              <li className="flex items-start gap-2">
-                <WhatsAppIcon className="size-4 text-accent mt-0.5 shrink-0" />
+              <li>
                 <a
                   href="https://wa.me/5547984405097"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-accent transition"
+                  aria-label="Falar no WhatsApp"
+                  className="inline-flex items-center gap-2 bg-[#25D366] text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-[#1ebe57] transition"
                 >
+                  <WhatsAppIcon className="size-4" />
                   WhatsApp (47) 98440-5097
                 </a>
               </li>
