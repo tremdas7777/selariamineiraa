@@ -31,7 +31,7 @@ export const trackEvent = createServerFn({ method: "POST" })
   })
   .handler(async ({ data }) => {
     const { recordEvent } = await import("./admin.server");
-    recordEvent(data);
+    await recordEvent(data);
     return { ok: true as const };
   });
 
