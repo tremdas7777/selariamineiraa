@@ -245,7 +245,7 @@ export function StoreFooter() {
           </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 pb-8">
+      <div className="max-w-7xl mx-auto px-4 pb-8 text-center">
         <a
           href="https://wa.me/5547984405097"
           target="_blank"
