@@ -47,11 +47,19 @@ export function StoreHeader() {
             </button>
 
             <div className="hidden xl:flex items-center gap-3 text-xs">
-              <Phone className="size-5 text-accent shrink-0" />
-              <div className="leading-tight">
-                <div className="opacity-70">Central de</div>
-                <div className="font-bold">Atendimento</div>
-              </div>
+              <a
+                href="https://wa.me/5547984405097"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Falar no WhatsApp"
+                className="flex items-center gap-2 text-foreground hover:text-accent transition"
+              >
+                <WhatsAppIcon className="size-5 text-accent shrink-0" />
+                <div className="leading-tight">
+                  <div className="opacity-70">Suporte</div>
+                  <div className="font-bold">WhatsApp</div>
+                </div>
+              </a>
             </div>
             <div className="hidden xl:flex items-center gap-3 text-xs">
               <ShieldCheck className="size-5 text-accent shrink-0" />
@@ -222,6 +230,17 @@ export function StoreFooter() {
             <ul className="space-y-3 text-sm">
               <li className="flex items-start gap-2"><MapPin className="size-4 text-accent mt-0.5 shrink-0" /> Vertentes, Minas Gerais</li>
               <li className="flex items-start gap-2"><Mail className="size-4 text-accent mt-0.5 shrink-0" /> contato@selariamineira.com.br</li>
+              <li className="flex items-start gap-2">
+                <WhatsAppIcon className="size-4 text-accent mt-0.5 shrink-0" />
+                <a
+                  href="https://wa.me/5547984405097"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-accent transition"
+                >
+                  WhatsApp (47) 98440-5097
+                </a>
+              </li>
             </ul>
           </div>
       </div>
