@@ -15,9 +15,9 @@ export const Route = createFileRoute("/produto/$slug")({
     meta: loaderData
       ? [
           { title: `${loaderData.product.name} — Selaria Mineira` },
-          { name: "description", content: `${loaderData.product.name} por ${formatBRL(loaderData.product.priceNumber)}. Couro legítimo, feito à mão em Minas Gerais.` },
+          { name: "description", content: `${loaderData.product.description || loaderData.product.name} — Selaria Mineira` },
           { property: "og:title", content: loaderData.product.name },
-          { property: "og:description", content: `${loaderData.product.name} — Selaria Mineira` },
+          { property: "og:description", content: loaderData.product.description || `${loaderData.product.name} — Selaria Mineira` },
           { property: "og:image", content: loaderData.product.image },
         ]
       : [{ title: "Produto — Selaria Mineira" }],

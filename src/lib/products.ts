@@ -1,6 +1,6 @@
 import raw from "@/data/products.json";
 
-export type RawProduct = { name: string; image: string; price: string; oldPrice: string | null };
+export type RawProduct = { name: string; image: string; price: string; oldPrice: string | null; description?: string };
 export type Product = RawProduct & { slug: string; priceNumber: number; category: CategorySlug };
 
 export type CategorySlug = "selas" | "arreios-cabecadas" | "cabrestos" | "esporas-freios" | "mantas-perneiras" | "botinas" | "acessorios";
