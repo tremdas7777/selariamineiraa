@@ -112,7 +112,7 @@ function ProductPage() {
           </div>
 
           <p className="text-muted-foreground leading-relaxed mb-6">
-            Peça em couro bovino legítimo, curtimento vegetal e acabamento manual em nossa oficina no coração das Vertentes de Minas Gerais. Costura dupla reforçada e ferragens em inox garantem durabilidade para atravessar gerações.
+            {product.description || `Peça em couro bovino legítimo, curtimento vegetal e acabamento manual em nossa oficina no coração das Vertentes de Minas Gerais. Costura dupla reforçada e ferragens em inox garantem durabilidade para atravessar gerações.`}
           </p>
 
           {/* Qty + CTA */}
@@ -175,7 +175,7 @@ function ProductPage() {
       <section className="max-w-7xl mx-auto px-4 py-10 border-t border-border">
         <h2 className="text-2xl font-black mb-6" style={{ fontFamily: "Playfair Display, serif" }}>Descrição do produto</h2>
         <div className="prose max-w-3xl text-muted-foreground space-y-3">
-          <p>Confeccionado 100% em couro bovino selecionado, este produto reúne o melhor da tradição artesanal mineira com o rigor técnico exigido pelos cavaleiros mais experientes.</p>
+          <p>{product.description || `Confeccionado 100% em couro bovino selecionado, este produto reúne o melhor da tradição artesanal mineira com o rigor técnico exigido pelos cavaleiros mais experientes.`}</p>
           <ul className="list-disc pl-5 space-y-1">
             <li>Material: couro bovino legítimo</li>
             <li>Costura: dupla reforçada com linha encerada</li>
