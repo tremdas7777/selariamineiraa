@@ -258,6 +258,16 @@ export function StoreLayout({ children }: { children: ReactNode }) {
       <StoreHeader />
       <main className="flex-1">{children}</main>
       <StoreFooter />
+      <a
+        href="https://wa.me/5511977864885"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Falar no WhatsApp"
+        className="fixed bottom-5 right-5 z-50 inline-flex items-center gap-2 bg-[#25D366] text-white px-4 py-3 rounded-full shadow-lg hover:bg-[#1ebe57] transition hover:scale-105 active:scale-95"
+      >
+        <WhatsAppIcon className="size-5" />
+        <span className="hidden sm:inline text-sm font-semibold">Fale no WhatsApp</span>
+      </a>
     </div>
   );
 }
