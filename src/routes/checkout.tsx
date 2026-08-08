@@ -79,6 +79,20 @@ function CheckoutPage() {
             <p className="mt-4 inline-flex items-center gap-2 text-xs text-muted-foreground">
               <Lock className="size-3.5" /> Ambiente de pagamento seguro
             </p>
+
+            {/* Bloco de confiança */}
+            <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+              {[
+                "Pagamento criptografado",
+                "Garantia de 12 meses",
+                "Enviamos para todo o Brasil",
+                "10% de desconto no PIX",
+              ].map((t) => (
+                <div key={t} className="flex items-center justify-center text-center gap-2 p-3 rounded-md bg-secondary/50 border border-border font-medium">
+                  {t}
+                </div>
+              ))}
+            </div>
           </>
         ) : (
           <>
