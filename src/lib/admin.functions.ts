@@ -152,7 +152,7 @@ const EMPTY_DATA = (): AdminData => ({
 export const getAdminData = createServerFn({ method: "GET" }).handler(async (): Promise<AdminData> => {
   const { isUnlocked, snapshot } = await import("./admin.server");
   if (!(await isUnlocked())) return EMPTY_DATA();
-  const snap = snapshot();
+  const snap = await snapshot();
   return {
     authorized: true,
     events: snap.events,
