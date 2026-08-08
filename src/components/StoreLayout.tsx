@@ -254,23 +254,6 @@ export function StoreFooter() {
   );
 }
 
-function WhatsAppButton() {
-  return (
-    <a
-      href="https://wa.me/5547984405097"
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label="Falar no WhatsApp"
-      className="fixed bottom-4 right-4 z-50 flex items-center gap-2 bg-[#25D366] text-white rounded-full shadow-lg hover:bg-[#1ebe57] transition-transform hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-[#25D366]"
-    >
-      <span className="hidden sm:inline pl-4 text-sm font-semibold">Fale conosco</span>
-      <span className="grid place-items-center size-14 rounded-full">
-        <WhatsAppIcon className="size-7" />
-      </span>
-    </a>
-  );
-}
-
 export function StoreLayout({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
@@ -286,7 +269,6 @@ export function StoreLayout({ children }: { children: ReactNode }) {
       <StoreHeader />
       <main className="flex-1">{children}</main>
       <StoreFooter />
-      <WhatsAppButton />
     </div>
   );
 }
