@@ -1,7 +1,5 @@
-// Server-only: armazenamento em memória do funil/pedidos/leads + sessão do admin
-// + envio para integrações externas (UTMify e Facebook Conversions API).
-// OBS: enquanto o Lovable Cloud não estiver ativo, os dados vivem apenas na
-// memória do servidor (são perdidos em cada novo deploy/reinício).
+// Server-only: persistência do funil/pedidos/leads/configurações no banco
+// (Lovable Cloud) + sessão do admin + integrações externas (UTMify / Facebook CAPI).
 import { useSession } from "@tanstack/react-start/server";
 import { createHash, timingSafeEqual } from "node:crypto";
 import type {
@@ -15,18 +13,7 @@ import type {
 
 export type { FunnelStep, Order, OrderStatus, TrackedEvent } from "./admin.types";
 
-type Store = {
-  events: TrackedEvent[];
-  orders: Order[];
-  leads: Lead[];
-  logs: IntegrationLog[];
-  settings: AdminSettings;
-};
-
-const MAX_EVENTS = 5000;
-const MAX_ORDERS = 1000;
-const MAX_LEADS = 500;
-const MAX_LOGS = 200;
+type Item = { title: string; quantity: number; unitPrice: number };
 
 const DEFAULT_SETTINGS: AdminSettings = {
   utmifyEnabled: false,
@@ -37,103 +24,175 @@ const DEFAULT_SETTINGS: AdminSettings = {
   fbTestEventCode: "",
 };
 
-const globalStore = globalThis as unknown as { __selariaAdminStore?: Store };
+async function db() {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  return supabaseAdmin;
+}
 
-function store(): Store {
-  if (!globalStore.__selariaAdminStore) {
-    globalStore.__selariaAdminStore = {
-      events: [],
-      orders: [],
-      leads: [],
-      logs: [],
-      settings: { ...DEFAULT_SETTINGS },
-    };
+function ms(value: string): number {
+  const t = Date.parse(value);
+  return Number.isFinite(t) ? t : Date.now();
+}
+
+function toItems(value: unknown): Item[] {
+  return Array.isArray(value) ? (value as Item[]) : [];
+}
+
+// ---------- eventos do funil ----------
+
+export async function recordEvent(input: Omit<TrackedEvent, "id" | "at">): Promise<void> {
+  try {
+    const client = await db();
+    await client.from("analytics_events").insert({
+      step: input.step,
+      visitor_id: input.visitorId,
+      path: input.path,
+      label: input.label ?? null,
+      value: input.value ?? null,
+    });
+  } catch (err) {
+    console.error("[admin] recordEvent", err);
   }
-  return globalStore.__selariaAdminStore;
 }
 
-export function recordEvent(input: Omit<TrackedEvent, "id" | "at">): void {
-  const s = store();
-  s.events.push({
-    ...input,
-    id: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`,
-    at: Date.now(),
-  });
-  if (s.events.length > MAX_EVENTS) s.events.splice(0, s.events.length - MAX_EVENTS);
-}
+// ---------- pedidos ----------
 
-export function upsertOrder(order: Omit<Order, "createdAt" | "updatedAt">): void {
-  const s = store();
-  const now = Date.now();
-  const existing = s.orders.find((o) => o.referenceId === order.referenceId);
-  if (existing) {
-    Object.assign(existing, order, { updatedAt: now });
-    return;
+export async function upsertOrder(order: Omit<Order, "createdAt" | "updatedAt">): Promise<void> {
+  try {
+    const client = await db();
+    await client
+      .from("store_orders")
+      .upsert(
+        {
+          external_id: order.id,
+          reference_id: order.referenceId,
+          status: order.status,
+          method: order.method,
+          amount: Math.round(order.amount || 0),
+          customer_name: order.customerName ?? "",
+          customer_email: order.customerEmail ?? "",
+          customer_phone: order.customerPhone ?? "",
+          city: order.city ?? "",
+          uf: order.uf ?? "",
+          items: order.items ?? [],
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: "reference_id" },
+      );
+  } catch (err) {
+    console.error("[admin] upsertOrder", err);
   }
-  s.orders.unshift({ ...order, createdAt: now, updatedAt: now });
-  if (s.orders.length > MAX_ORDERS) s.orders.length = MAX_ORDERS;
 }
 
-export function updateOrderStatus(key: string, status: OrderStatus): boolean {
-  const s = store();
-  const found = s.orders.find((o) => o.referenceId === key || o.id === key);
-  if (!found) return false;
-  found.status = status;
-  found.updatedAt = Date.now();
-  return true;
+export async function updateOrderStatus(key: string, status: OrderStatus): Promise<boolean> {
+  try {
+    const client = await db();
+    const { data } = await client
+      .from("store_orders")
+      .update({ status, updated_at: new Date().toISOString() })
+      .or(`reference_id.eq.${key},external_id.eq.${key}`)
+      .select("id");
+    return (data?.length ?? 0) > 0;
+  } catch (err) {
+    console.error("[admin] updateOrderStatus", err);
+    return false;
+  }
 }
 
 // ---------- leads / carrinhos abandonados ----------
 
-export function upsertLead(input: Omit<Lead, "createdAt" | "updatedAt" | "converted">): void {
-  const s = store();
-  const now = Date.now();
-  const existing = s.leads.find((l) => l.visitorId === input.visitorId);
-  if (existing) {
-    Object.assign(existing, input, { updatedAt: now });
-    return;
+export async function upsertLead(
+  input: Omit<Lead, "createdAt" | "updatedAt" | "converted">,
+): Promise<void> {
+  try {
+    const client = await db();
+    await client.from("store_leads").upsert(
+      {
+        visitor_id: input.visitorId,
+        name: input.name ?? "",
+        email: input.email ?? "",
+        phone: input.phone ?? "",
+        city: input.city ?? "",
+        uf: input.uf ?? "",
+        amount: Math.round(input.amount || 0),
+        items: input.items ?? [],
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "visitor_id" },
+    );
+  } catch (err) {
+    console.error("[admin] upsertLead", err);
   }
-  s.leads.unshift({ ...input, converted: false, createdAt: now, updatedAt: now });
-  if (s.leads.length > MAX_LEADS) s.leads.length = MAX_LEADS;
 }
 
 /** Marca como convertido o lead que corresponde ao e-mail/telefone do pedido. */
-export function markLeadConverted(email: string, phone: string): void {
-  const s = store();
-  const digits = (v: string) => v.replace(/\D/g, "");
-  for (const l of s.leads) {
-    if (
-      (email && l.email.toLowerCase() === email.toLowerCase()) ||
-      (phone && digits(l.phone) === digits(phone))
-    ) {
-      l.converted = true;
-      l.updatedAt = Date.now();
-    }
+export async function markLeadConverted(email: string, phone: string): Promise<void> {
+  try {
+    const client = await db();
+    const digits = (phone ?? "").replace(/\D/g, "");
+    const filters: string[] = [];
+    if (email) filters.push(`email.ilike.${email}`);
+    if (digits) filters.push(`phone.ilike.%${digits.slice(-8)}%`);
+    if (!filters.length) return;
+    await client
+      .from("store_leads")
+      .update({ converted: true, updated_at: new Date().toISOString() })
+      .or(filters.join(","));
+  } catch (err) {
+    console.error("[admin] markLeadConverted", err);
   }
 }
 
 // ---------- configurações das integrações ----------
 
-export function getSettings(): AdminSettings {
-  return { ...store().settings };
+export async function getSettings(): Promise<AdminSettings> {
+  try {
+    const client = await db();
+    const { data } = await client.from("admin_settings").select("*").eq("id", "default").maybeSingle();
+    if (!data) return { ...DEFAULT_SETTINGS };
+    return {
+      utmifyEnabled: data.utmify_enabled,
+      utmifyToken: data.utmify_token,
+      fbPixelEnabled: data.fb_pixel_enabled,
+      fbPixelId: data.fb_pixel_id,
+      fbAccessToken: data.fb_access_token,
+      fbTestEventCode: data.fb_test_event_code,
+    };
+  } catch (err) {
+    console.error("[admin] getSettings", err);
+    return { ...DEFAULT_SETTINGS };
+  }
 }
 
-export function saveSettings(patch: Partial<AdminSettings>): AdminSettings {
-  const s = store();
-  s.settings = { ...s.settings, ...patch };
-  return { ...s.settings };
+export async function saveSettings(patch: AdminSettings): Promise<AdminSettings> {
+  try {
+    const client = await db();
+    await client.from("admin_settings").upsert(
+      {
+        id: "default",
+        utmify_enabled: patch.utmifyEnabled,
+        utmify_token: patch.utmifyToken,
+        fb_pixel_enabled: patch.fbPixelEnabled,
+        fb_pixel_id: patch.fbPixelId,
+        fb_access_token: patch.fbAccessToken,
+        fb_test_event_code: patch.fbTestEventCode,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "id" },
+    );
+  } catch (err) {
+    console.error("[admin] saveSettings", err);
+  }
+  return getSettings();
 }
 
-function log(provider: IntegrationLog["provider"], ok: boolean, message: string): void {
-  const s = store();
-  s.logs.unshift({
-    id: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`,
-    provider,
-    ok,
-    message: message.slice(0, 300),
-    at: Date.now(),
-  });
-  if (s.logs.length > MAX_LOGS) s.logs.length = MAX_LOGS;
+async function log(provider: IntegrationLog["provider"], ok: boolean, message: string): Promise<void> {
+  try {
+    const client = await db();
+    await client.from("integration_logs").insert({ provider, ok, message: message.slice(0, 300) });
+  } catch (err) {
+    console.error("[admin] log", err);
+  }
 }
 
 function sha256(value: string): string {
@@ -141,15 +200,19 @@ function sha256(value: string): string {
 }
 
 /** Envia o pedido para a UTMify (se habilitada). Nunca lança. */
-async function sendToUtmify(order: Omit<Order, "createdAt" | "updatedAt">): Promise<void> {
-  const { utmifyEnabled, utmifyToken } = store().settings;
+async function sendToUtmify(
+  order: Omit<Order, "createdAt" | "updatedAt">,
+  settings: AdminSettings,
+): Promise<void> {
+  const { utmifyEnabled, utmifyToken } = settings;
   if (!utmifyEnabled || !utmifyToken) return;
   const nowIso = new Date().toISOString().replace("T", " ").slice(0, 19);
   const body = {
     orderId: order.referenceId,
     platform: "SelariaMineira",
     paymentMethod: order.method === "PIX" ? "pix" : "credit_card",
-    status: order.status === "APPROVED" ? "paid" : order.status === "PENDING" ? "waiting_payment" : "refused",
+    status:
+      order.status === "APPROVED" ? "paid" : order.status === "PENDING" ? "waiting_payment" : "refused",
     createdAt: nowIso,
     approvedDate: order.status === "APPROVED" ? nowIso : null,
     refundedAt: null,
@@ -173,7 +236,11 @@ async function sendToUtmify(order: Omit<Order, "createdAt" | "updatedAt">): Prom
       src: null, sck: null, utm_source: null, utm_campaign: null,
       utm_medium: null, utm_content: null, utm_term: null,
     },
-    commission: { totalPriceInCents: order.amount, gatewayFeeInCents: 0, userCommissionInCents: order.amount },
+    commission: {
+      totalPriceInCents: order.amount,
+      gatewayFeeInCents: 0,
+      userCommissionInCents: order.amount,
+    },
     isTest: false,
   };
   try {
@@ -183,15 +250,18 @@ async function sendToUtmify(order: Omit<Order, "createdAt" | "updatedAt">): Prom
       body: JSON.stringify(body),
     });
     const text = await res.text();
-    log("utmify", res.ok, res.ok ? `Pedido ${order.referenceId} enviado` : `[${res.status}] ${text}`);
+    await log("utmify", res.ok, res.ok ? `Pedido ${order.referenceId} enviado` : `[${res.status}] ${text}`);
   } catch (err) {
-    log("utmify", false, err instanceof Error ? err.message : "erro desconhecido");
+    await log("utmify", false, err instanceof Error ? err.message : "erro desconhecido");
   }
 }
 
 /** Envia a conversão para a API de Conversões do Facebook (se habilitada). Nunca lança. */
-async function sendToFacebook(order: Omit<Order, "createdAt" | "updatedAt">): Promise<void> {
-  const { fbPixelEnabled, fbPixelId, fbAccessToken, fbTestEventCode } = store().settings;
+async function sendToFacebook(
+  order: Omit<Order, "createdAt" | "updatedAt">,
+  settings: AdminSettings,
+): Promise<void> {
+  const { fbPixelEnabled, fbPixelId, fbAccessToken, fbTestEventCode } = settings;
   if (!fbPixelEnabled || !fbPixelId || !fbAccessToken) return;
   const eventName = order.status === "APPROVED" ? "Purchase" : "InitiateCheckout";
   const payload: Record<string, unknown> = {
@@ -211,7 +281,11 @@ async function sendToFacebook(order: Omit<Order, "createdAt" | "updatedAt">): Pr
         custom_data: {
           currency: "BRL",
           value: Number((order.amount / 100).toFixed(2)),
-          contents: order.items.map((i) => ({ id: i.title, quantity: i.quantity, item_price: i.unitPrice / 100 })),
+          contents: order.items.map((i) => ({
+            id: i.title,
+            quantity: i.quantity,
+            item_price: i.unitPrice / 100,
+          })),
         },
       },
     ],
@@ -223,25 +297,91 @@ async function sendToFacebook(order: Omit<Order, "createdAt" | "updatedAt">): Pr
       { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) },
     );
     const text = await res.text();
-    log("facebook", res.ok, res.ok ? `${eventName} ${order.referenceId} enviado` : `[${res.status}] ${text}`);
+    await log("facebook", res.ok, res.ok ? `${eventName} ${order.referenceId} enviado` : `[${res.status}] ${text}`);
   } catch (err) {
-    log("facebook", false, err instanceof Error ? err.message : "erro desconhecido");
+    await log("facebook", false, err instanceof Error ? err.message : "erro desconhecido");
   }
 }
 
 export async function notifyIntegrations(order: Omit<Order, "createdAt" | "updatedAt">): Promise<void> {
-  await Promise.all([sendToUtmify(order), sendToFacebook(order)]);
+  const settings = await getSettings();
+  await Promise.all([sendToUtmify(order, settings), sendToFacebook(order, settings)]);
 }
 
-export function snapshot() {
-  const s = store();
-  return {
-    events: s.events.slice(-1200),
-    orders: s.orders.slice(0, 300),
-    leads: s.leads.slice(0, 200),
-    logs: s.logs.slice(0, 60),
-    settings: { ...s.settings },
-  };
+// ---------- snapshot para o painel ----------
+
+export async function snapshot(): Promise<{
+  events: TrackedEvent[];
+  orders: Order[];
+  leads: Lead[];
+  logs: IntegrationLog[];
+  settings: AdminSettings;
+}> {
+  const client = await db();
+  const since = new Date(Date.now() - 7 * 24 * 3600_000).toISOString();
+
+  const [eventsRes, ordersRes, leadsRes, logsRes, settings] = await Promise.all([
+    client
+      .from("analytics_events")
+      .select("*")
+      .gte("created_at", since)
+      .order("created_at", { ascending: false })
+      .limit(3000),
+    client.from("store_orders").select("*").order("created_at", { ascending: false }).limit(300),
+    client.from("store_leads").select("*").order("updated_at", { ascending: false }).limit(200),
+    client.from("integration_logs").select("*").order("created_at", { ascending: false }).limit(60),
+    getSettings(),
+  ]);
+
+  const events: TrackedEvent[] = (eventsRes.data ?? []).map((e) => ({
+    id: e.id,
+    step: e.step as TrackedEvent["step"],
+    visitorId: e.visitor_id,
+    path: e.path,
+    label: e.label ?? undefined,
+    value: e.value === null ? undefined : Number(e.value),
+    at: ms(e.created_at),
+  }));
+
+  const orders: Order[] = (ordersRes.data ?? []).map((o) => ({
+    id: o.external_id,
+    referenceId: o.reference_id,
+    status: o.status as OrderStatus,
+    method: o.method as Order["method"],
+    amount: o.amount,
+    customerName: o.customer_name,
+    customerEmail: o.customer_email,
+    customerPhone: o.customer_phone,
+    city: o.city,
+    uf: o.uf,
+    items: toItems(o.items),
+    createdAt: ms(o.created_at),
+    updatedAt: ms(o.updated_at),
+  }));
+
+  const leads: Lead[] = (leadsRes.data ?? []).map((l) => ({
+    visitorId: l.visitor_id,
+    name: l.name,
+    email: l.email,
+    phone: l.phone,
+    city: l.city,
+    uf: l.uf,
+    amount: l.amount,
+    items: toItems(l.items),
+    converted: l.converted,
+    createdAt: ms(l.created_at),
+    updatedAt: ms(l.updated_at),
+  }));
+
+  const logs: IntegrationLog[] = (logsRes.data ?? []).map((g) => ({
+    id: g.id,
+    provider: g.provider as IntegrationLog["provider"],
+    ok: g.ok,
+    message: g.message,
+    at: ms(g.created_at),
+  }));
+
+  return { events, orders, leads, logs, settings };
 }
 
 // ---------- sessão ----------
