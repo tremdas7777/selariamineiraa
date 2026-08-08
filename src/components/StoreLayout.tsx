@@ -48,7 +48,7 @@ export function StoreHeader() {
 
             <div className="hidden xl:flex items-center gap-3 text-xs">
               <a
-                href="https://wa.me/5547984405097"
+                href="https://wa.me/5511977864885"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Falar no WhatsApp"
@@ -232,7 +232,7 @@ export function StoreFooter() {
               <li className="flex items-start gap-2"><Mail className="size-4 text-accent mt-0.5 shrink-0" /> contato@selariamineira.com.br</li>
               <li>
                 <a
-                  href="https://wa.me/5547984405097"
+                  href="https://wa.me/5511977864885"
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Falar no WhatsApp"
