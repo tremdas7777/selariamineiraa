@@ -160,8 +160,16 @@ function ProductPage() {
               </div>
             ))}
           </div>
+
+          {/* Bloco de confiança */}
+          <ul className="mt-4 grid gap-2 text-sm text-muted-foreground border border-border rounded-md p-4">
+            <li className="flex items-center gap-2"><ShieldCheck className="size-4 text-primary" /> Garantia de 12 meses contra defeitos de fabricação</li>
+            <li className="flex items-center gap-2"><Truck className="size-4 text-primary" /> Envio em até 3 dias úteis após a confirmação do pagamento</li>
+            <li className="flex items-center gap-2"><CreditCard className="size-4 text-primary" /> Pagamento processado em ambiente criptografado</li>
+          </ul>
         </div>
       </section>
+
 
       {/* Description */}
       <section className="max-w-7xl mx-auto px-4 py-10 border-t border-border">
