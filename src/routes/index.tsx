@@ -67,16 +67,11 @@ function Home() {
       </section>
       {/* Faixa de oferta explícita */}
       <section className="bg-primary text-primary-foreground">
-        <div className="max-w-7xl mx-auto px-4 py-5 flex flex-col md:flex-row items-center justify-between gap-3 text-center md:text-left">
-          <div>
-            <div className="text-lg md:text-2xl font-black" style={{ fontFamily: "Playfair Display, serif" }}>
-              Toda a loja com <span className="text-accent">50% OFF</span> + 10% no PIX
-            </div>
-            <p className="text-sm text-primary-foreground/80">Couro legítimo, feito à mão. Preços já com desconto aplicado no site.</p>
+        <div className="max-w-7xl mx-auto px-4 py-5 text-center">
+          <div className="text-lg md:text-2xl font-black" style={{ fontFamily: "Playfair Display, serif" }}>
+            Toda a loja com <span className="text-accent">50% OFF</span> + 10% no PIX
           </div>
-          <a href="#produtos" className="inline-flex items-center gap-2 bg-accent text-accent-foreground px-6 py-3 rounded-md font-bold hover:brightness-110 transition shrink-0">
-            Aproveitar agora <ChevronRight className="size-4" />
-          </a>
+          <p className="text-sm text-primary-foreground/80">Couro legítimo, feito à mão. Preços já com desconto aplicado no site.</p>
         </div>
       </section>
 
