@@ -239,7 +239,7 @@ export function StoreFooter() {
                   className="inline-flex items-center gap-2 bg-[#25D366] text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-[#1ebe57] transition"
                 >
                   <WhatsAppIcon className="size-4" />
-                  WhatsApp (47) 98440-5097
+                  Fale no WhatsApp
                 </a>
               </li>
             </ul>
