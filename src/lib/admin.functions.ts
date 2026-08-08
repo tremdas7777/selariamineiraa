@@ -91,7 +91,7 @@ export const saveLead = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     if (!data.visitorId) return { ok: false as const };
     const { upsertLead } = await import("./admin.server");
-    upsertLead(data);
+    await upsertLead(data);
     return { ok: true as const };
   });
 
