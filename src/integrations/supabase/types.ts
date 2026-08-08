@@ -14,7 +14,189 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      admin_settings: {
+        Row: {
+          fb_access_token: string
+          fb_pixel_enabled: boolean
+          fb_pixel_id: string
+          fb_test_event_code: string
+          id: string
+          updated_at: string
+          utmify_enabled: boolean
+          utmify_token: string
+        }
+        Insert: {
+          fb_access_token?: string
+          fb_pixel_enabled?: boolean
+          fb_pixel_id?: string
+          fb_test_event_code?: string
+          id?: string
+          updated_at?: string
+          utmify_enabled?: boolean
+          utmify_token?: string
+        }
+        Update: {
+          fb_access_token?: string
+          fb_pixel_enabled?: boolean
+          fb_pixel_id?: string
+          fb_test_event_code?: string
+          id?: string
+          updated_at?: string
+          utmify_enabled?: boolean
+          utmify_token?: string
+        }
+        Relationships: []
+      }
+      analytics_events: {
+        Row: {
+          created_at: string
+          id: string
+          label: string | null
+          path: string
+          step: string
+          value: number | null
+          visitor_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          label?: string | null
+          path: string
+          step: string
+          value?: number | null
+          visitor_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          label?: string | null
+          path?: string
+          step?: string
+          value?: number | null
+          visitor_id?: string
+        }
+        Relationships: []
+      }
+      integration_logs: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          ok: boolean
+          provider: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message?: string
+          ok?: boolean
+          provider: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          ok?: boolean
+          provider?: string
+        }
+        Relationships: []
+      }
+      store_leads: {
+        Row: {
+          amount: number
+          city: string
+          converted: boolean
+          created_at: string
+          email: string
+          id: string
+          items: Json
+          name: string
+          phone: string
+          uf: string
+          updated_at: string
+          visitor_id: string
+        }
+        Insert: {
+          amount?: number
+          city?: string
+          converted?: boolean
+          created_at?: string
+          email?: string
+          id?: string
+          items?: Json
+          name?: string
+          phone?: string
+          uf?: string
+          updated_at?: string
+          visitor_id: string
+        }
+        Update: {
+          amount?: number
+          city?: string
+          converted?: boolean
+          created_at?: string
+          email?: string
+          id?: string
+          items?: Json
+          name?: string
+          phone?: string
+          uf?: string
+          updated_at?: string
+          visitor_id?: string
+        }
+        Relationships: []
+      }
+      store_orders: {
+        Row: {
+          amount: number
+          city: string
+          created_at: string
+          customer_email: string
+          customer_name: string
+          customer_phone: string
+          external_id: string
+          id: string
+          items: Json
+          method: string
+          reference_id: string
+          status: string
+          uf: string
+          updated_at: string
+        }
+        Insert: {
+          amount?: number
+          city?: string
+          created_at?: string
+          customer_email?: string
+          customer_name?: string
+          customer_phone?: string
+          external_id: string
+          id?: string
+          items?: Json
+          method: string
+          reference_id: string
+          status: string
+          uf?: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          city?: string
+          created_at?: string
+          customer_email?: string
+          customer_name?: string
+          customer_phone?: string
+          external_id?: string
+          id?: string
+          items?: Json
+          method?: string
+          reference_id?: string
+          status?: string
+          uf?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
