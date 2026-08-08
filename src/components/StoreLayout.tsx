@@ -244,6 +244,20 @@ export function StoreFooter() {
             </ul>
           </div>
       </div>
+
+      <div className="max-w-7xl mx-auto px-4 pb-8">
+        <a
+          href="https://wa.me/5547984405097"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Falar no WhatsApp"
+          className="inline-flex items-center justify-center gap-2 bg-[#25D366] text-white px-6 py-3 rounded-full font-semibold shadow-md hover:bg-[#1ebe57] transition"
+        >
+          <WhatsAppIcon className="size-5" />
+          Fale conosco pelo WhatsApp
+        </a>
+      </div>
+
       <div className="border-t border-background/10 pt-6">
         <div className="max-w-7xl mx-auto px-4 text-center text-xs">
           © {new Date().getFullYear()} Selaria Mineira. Todos os direitos reservados.
