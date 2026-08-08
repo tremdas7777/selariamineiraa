@@ -117,7 +117,7 @@ export const updateSettings = createServerFn({ method: "POST" })
   .handler(async ({ data }): Promise<{ ok: boolean; settings?: AdminSettings }> => {
     const { isUnlocked, saveSettings } = await import("./admin.server");
     if (!(await isUnlocked())) return { ok: false };
-    const settings = saveSettings({
+    const settings = await saveSettings({
       utmifyEnabled: Boolean(data.utmifyEnabled),
       utmifyToken: String(data.utmifyToken ?? "").slice(0, 400),
       fbPixelEnabled: Boolean(data.fbPixelEnabled),
@@ -131,7 +131,7 @@ export const updateSettings = createServerFn({ method: "POST" })
 /** Somente o ID público do pixel, para carregar o fbq na vitrine. */
 export const getPublicPixel = createServerFn({ method: "GET" }).handler(async () => {
   const { getSettings } = await import("./admin.server");
-  const s = getSettings();
+  const s = await getSettings();
   return { pixelId: s.fbPixelEnabled ? s.fbPixelId : "" };
 });
 
