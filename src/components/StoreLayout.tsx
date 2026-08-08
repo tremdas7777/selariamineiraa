@@ -225,25 +225,13 @@ export function StoreFooter() {
             <li><a href="/#produtos" className="hover:text-accent transition">Acessórios</a></li>
           </ul>
         </div>
-          <div>
-            <h4 className="font-bold text-background mb-4 text-sm uppercase tracking-widest">Contato</h4>
-            <ul className="space-y-3 text-sm">
-              <li className="flex items-start gap-2"><MapPin className="size-4 text-accent mt-0.5 shrink-0" /> Vertentes, Minas Gerais</li>
-              <li className="flex items-start gap-2"><Mail className="size-4 text-accent mt-0.5 shrink-0" /> contato@selariamineira.com.br</li>
-              <li>
-                <a
-                  href="https://wa.me/5511977864885"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Falar no WhatsApp"
-                  className="inline-flex items-center gap-2 bg-[#25D366] text-white px-4 py-2 rounded-full text-sm font-semibold hover:bg-[#1ebe57] transition"
-                >
-                  <WhatsAppIcon className="size-4" />
-                  Fale no WhatsApp
-                </a>
-              </li>
-            </ul>
-          </div>
+        <div>
+          <h4 className="font-bold text-background mb-4 text-sm uppercase tracking-widest">Contato</h4>
+          <ul className="space-y-3 text-sm">
+            <li className="flex items-start gap-2"><MapPin className="size-4 text-accent mt-0.5 shrink-0" /> Vertentes, Minas Gerais</li>
+            <li className="flex items-start gap-2"><Mail className="size-4 text-accent mt-0.5 shrink-0" /> contato@selariamineira.com.br</li>
+          </ul>
+        </div>
       </div>
 
       <div className="border-t border-background/10 pt-6">
