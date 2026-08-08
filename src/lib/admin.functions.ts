@@ -59,8 +59,8 @@ export const recordOrder = createServerFn({ method: "POST" })
       customerEmail: String(data.customerEmail).slice(0, 160),
       items: (data.items ?? []).slice(0, 50),
     };
-    upsertOrder(order);
-    markLeadConverted(order.customerEmail, order.customerPhone);
+    await upsertOrder(order);
+    await markLeadConverted(order.customerEmail, order.customerPhone);
     await notifyIntegrations(order);
     return { ok: true as const };
   });
