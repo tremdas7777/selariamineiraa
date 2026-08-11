@@ -16,7 +16,22 @@ const categoriasHome: { slug: CategorySlug; nome: string; img: string; count: nu
   })
   .filter((c) => c.count > 0 && c.img);
 
-const destaques = products.slice(0, 8);
+// Ordem definida pelos produtos mais acessados durante a campanha de anúncios
+const maisAcessados = [
+  "sela-mangalarga-elite-cantoneiras-de-luxo",
+  "suporte-de-couro-para-jbl-bombox-case-de-couro",
+  "sela-prova-de-laco-couro-virado-especial",
+  "botina-em-couro-vaqueta-vira-francesa",
+  "cabresto-de-couro-com-sujigola",
+  "sela-australiana-nova-extreme-mangalarga-2025-cor-pinhao-vaqueta",
+  "sela-de-cabeca-em-gel-com-alforge-e-porta-bebidas-especial-cavalgada-personalizada",
+  "cabresto-trancado-couro-cru",
+];
+
+const destaques = [
+  ...maisAcessados.map((slug) => products.find((p) => p.slug === slug)).filter((p): p is (typeof products)[number] => Boolean(p)),
+  ...products.filter((p) => !maisAcessados.includes(p.slug)),
+].slice(0, 8);
 
 const tiposSela = selaTipos
   .map((t) => {
