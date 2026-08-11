@@ -2,8 +2,9 @@ import { createFileRoute, Link, notFound, useRouter, useNavigate } from "@tansta
 import { useState } from "react";
 import { ChevronRight, ShieldCheck, Truck, CreditCard, Star, Minus, Plus, ShoppingBag, Check } from "lucide-react";
 import { StoreLayout } from "@/components/StoreLayout";
-import { getProduct, products, formatBRL } from "@/lib/products";
+import { getProduct, products, formatBRL, sizesFor } from "@/lib/products";
 import { useCart } from "@/lib/cart";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/produto/$slug")({
   loader: ({ params }) => {
@@ -49,6 +50,9 @@ function ProductPage() {
   const { product } = Route.useLoaderData();
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
+  const sizes = sizesFor(product.category);
+  const [size, setSize] = useState<string | null>(null);
+  const [sizeError, setSizeError] = useState(false);
   const { add } = useCart();
   const navigate = useNavigate();
 
@@ -57,13 +61,15 @@ function ProductPage() {
   const related = products.filter((p) => p.slug !== product.slug).slice(0, 4);
 
   const handleAdd = () => {
-    add({ slug: product.slug, name: product.name, image: product.image, price: product.priceNumber }, qty);
+    if (sizes.length > 0 && !size) { setSizeError(true); return; }
+    add({ slug: product.slug, name: product.name, image: product.image, price: product.priceNumber, size: size ?? undefined }, qty);
     setAdded(true);
     setTimeout(() => setAdded(false), 2000);
   };
 
   const handleBuyNow = () => {
-    add({ slug: product.slug, name: product.name, image: product.image, price: product.priceNumber }, qty);
+    if (sizes.length > 0 && !size) { setSizeError(true); return; }
+    add({ slug: product.slug, name: product.name, image: product.image, price: product.priceNumber, size: size ?? undefined }, qty);
     navigate({ to: "/checkout" });
   };
 
@@ -114,6 +120,38 @@ function ProductPage() {
           <p className="text-muted-foreground leading-relaxed mb-6">
             {product.description || `Peça em couro bovino legítimo, curtimento vegetal e acabamento manual em nossa oficina no coração das Vertentes de Minas Gerais. Costura dupla reforçada e ferragens em inox garantem durabilidade para atravessar gerações.`}
           </p>
+
+          {sizes.length > 0 && (
+            <div className="mb-6">
+              <div className="flex items-baseline justify-between mb-2">
+                <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                  {product.category === "selas" ? "Tamanho da sela (polegadas)" : "Numeração"}
+                </span>
+                {size && <span className="text-xs font-bold">Selecionado: {size}</span>}
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {sizes.map((s) => (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => { setSize(s); setSizeError(false); }}
+                    aria-pressed={size === s}
+                    className={cn(
+                      "min-w-12 px-4 py-2 rounded-md border text-sm font-bold transition",
+                      size === s
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-background border-border hover:border-primary hover:text-primary",
+                    )}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+              {sizeError && (
+                <p className="mt-2 text-xs font-bold text-destructive">Selecione um tamanho para continuar.</p>
+              )}
+            </div>
+          )}
 
           {/* Qty + CTA */}
           <div className="flex items-center gap-3 mb-4">

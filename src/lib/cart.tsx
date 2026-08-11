@@ -6,13 +6,17 @@ export type CartItem = {
   image: string;
   price: number;
   qty: number;
+  size?: string;
 };
+
+export const itemKey = (i: { slug: string; size?: string }) =>
+  i.size ? `${i.slug}::${i.size}` : i.slug;
 
 type CartContextValue = {
   items: CartItem[];
   add: (item: Omit<CartItem, "qty">, qty?: number) => void;
-  remove: (slug: string) => void;
-  setQty: (slug: string, qty: number) => void;
+  remove: (key: string) => void;
+  setQty: (key: string, qty: number) => void;
   clear: () => void;
   count: number;
   subtotal: number;
@@ -20,6 +24,7 @@ type CartContextValue = {
 
 const CartContext = createContext<CartContextValue | null>(null);
 const STORAGE_KEY = "selaria-mineira-cart";
+
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
@@ -41,17 +46,19 @@ export function CartProvider({ children }: { children: ReactNode }) {
     items,
     add: (item, qty = 1) =>
       setItems((prev) => {
-        const found = prev.find((p) => p.slug === item.slug);
-        if (found) return prev.map((p) => (p.slug === item.slug ? { ...p, qty: p.qty + qty } : p));
+        const k = itemKey(item);
+        const found = prev.find((p) => itemKey(p) === k);
+        if (found) return prev.map((p) => (itemKey(p) === k ? { ...p, qty: p.qty + qty } : p));
         return [...prev, { ...item, qty }];
       }),
-    remove: (slug) => setItems((prev) => prev.filter((p) => p.slug !== slug)),
-    setQty: (slug, qty) =>
+    remove: (key) => setItems((prev) => prev.filter((p) => itemKey(p) !== key)),
+    setQty: (key, qty) =>
       setItems((prev) =>
         qty <= 0
-          ? prev.filter((p) => p.slug !== slug)
-          : prev.map((p) => (p.slug === slug ? { ...p, qty } : p)),
+          ? prev.filter((p) => itemKey(p) !== key)
+          : prev.map((p) => (itemKey(p) === key ? { ...p, qty } : p)),
       ),
+
     clear: () => setItems([]),
     count: items.reduce((s, i) => s + i.qty, 0),
     subtotal: items.reduce((s, i) => s + i.qty * i.price, 0),

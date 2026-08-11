@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Minus, Plus, Trash2, ShoppingBag, ArrowRight } from "lucide-react";
 import { StoreLayout } from "@/components/StoreLayout";
-import { useCart } from "@/lib/cart";
+import { useCart, itemKey } from "@/lib/cart";
 import { formatBRL } from "@/lib/products";
 
 export const Route = createFileRoute("/carrinho")({
@@ -43,7 +43,7 @@ function CartPage() {
         <div className="grid lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-4">
             {items.map((item) => (
-              <div key={item.slug} className="flex gap-4 bg-card border border-border rounded-lg p-4">
+              <div key={itemKey(item)} className="flex gap-4 bg-card border border-border rounded-lg p-4">
                 <Link to="/produto/$slug" params={{ slug: item.slug }} className="shrink-0">
                   <img src={item.image} alt={item.name} className="size-24 md:size-28 rounded-md object-contain bg-secondary" />
                 </Link>
@@ -53,17 +53,18 @@ function CartPage() {
                       {item.name}
                     </Link>
                     <div className="text-sm text-muted-foreground mt-1">{formatBRL(item.price)} un.</div>
+                    {item.size && <div className="text-xs font-bold mt-1">Tamanho: {item.size}</div>}
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="flex items-center border border-border rounded-md">
-                      <button onClick={() => setQty(item.slug, item.qty - 1)} className="p-2 hover:bg-secondary" aria-label="Diminuir"><Minus className="size-3" /></button>
+                      <button onClick={() => setQty(itemKey(item), item.qty - 1)} className="p-2 hover:bg-secondary" aria-label="Diminuir"><Minus className="size-3" /></button>
                       <span className="w-8 text-center text-sm font-bold">{item.qty}</span>
-                      <button onClick={() => setQty(item.slug, item.qty + 1)} className="p-2 hover:bg-secondary" aria-label="Aumentar"><Plus className="size-3" /></button>
+                      <button onClick={() => setQty(itemKey(item), item.qty + 1)} className="p-2 hover:bg-secondary" aria-label="Aumentar"><Plus className="size-3" /></button>
                     </div>
                     <div className="font-black text-primary w-24 text-right" style={{ fontFamily: "Playfair Display, serif" }}>
                       {formatBRL(item.price * item.qty)}
                     </div>
-                    <button onClick={() => remove(item.slug)} className="p-2 text-muted-foreground hover:text-destructive transition" aria-label="Remover">
+                    <button onClick={() => remove(itemKey(item))} className="p-2 text-muted-foreground hover:text-destructive transition" aria-label="Remover">
                       <Trash2 className="size-4" />
                     </button>
                   </div>
