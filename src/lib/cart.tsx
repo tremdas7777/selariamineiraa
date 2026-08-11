@@ -6,13 +6,17 @@ export type CartItem = {
   image: string;
   price: number;
   qty: number;
+  size?: string;
 };
+
+export const itemKey = (i: { slug: string; size?: string }) =>
+  i.size ? `${i.slug}::${i.size}` : i.slug;
 
 type CartContextValue = {
   items: CartItem[];
   add: (item: Omit<CartItem, "qty">, qty?: number) => void;
-  remove: (slug: string) => void;
-  setQty: (slug: string, qty: number) => void;
+  remove: (key: string) => void;
+  setQty: (key: string, qty: number) => void;
   clear: () => void;
   count: number;
   subtotal: number;
@@ -20,6 +24,7 @@ type CartContextValue = {
 
 const CartContext = createContext<CartContextValue | null>(null);
 const STORAGE_KEY = "selaria-mineira-cart";
+
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
