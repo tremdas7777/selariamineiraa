@@ -79,3 +79,10 @@ export const getSelasByTipo = (slug: SelaTipo) => {
 };
 
 
+
+/** Tamanhos disponíveis por categoria. Selas usam polegadas (13 a 17); botinas usam numeração BR. */
+export function sizesFor(category: CategorySlug): string[] {
+  if (category === "selas") return ["13", "14", "15", "16", "17"];
+  if (category === "botinas") return ["36", "37", "38", "39", "40", "41", "42", "43", "44"];
+  return [];
+}
