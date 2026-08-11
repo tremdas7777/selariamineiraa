@@ -149,35 +149,36 @@ function Home() {
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 md:gap-6">
             {tiposSela.map((t) => (
-              <Link
-                key={t.slug}
-                to="/selas/$tipo"
-                params={{ tipo: t.slug as SelaTipo }}
-                className="group relative block rounded-lg overflow-hidden border-2 border-accent/30 shadow-2xl bg-gradient-to-b from-[#3d2817] to-[#1a0f08] aspect-[4/5]"
-              >
-                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_35%,rgba(0,0,0,0.7)_100%)]" />
-                {t.img && (
-                  <img
-                    src={t.img}
-                    alt={`Sela ${t.name}`}
-                    loading="lazy"
-                    className="absolute inset-0 m-auto w-[80%] h-[55%] object-contain top-8 group-hover:scale-110 transition-transform duration-500 drop-shadow-2xl"
-                  />
-                )}
-                <div className="absolute inset-x-0 top-5 text-center px-3">
-                  <h3 className="text-2xl md:text-3xl font-black uppercase text-accent drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)] tracking-wide leading-none" style={{ fontFamily: "Playfair Display, serif" }}>
-                    {t.name}
-                  </h3>
-                </div>
-                <div className="absolute inset-x-0 bottom-5 flex justify-center">
-                  <span className="inline-flex items-center gap-2 bg-accent text-accent-foreground font-bold text-xs md:text-sm px-5 py-2.5 rounded-full shadow-xl group-hover:brightness-110 transition uppercase tracking-wider">
-                    Confira aqui <ChevronRight className="size-4" />
-                  </span>
-                </div>
-                <span className="absolute top-3 right-3 bg-accent/90 text-accent-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">
-                  {t.count}
+            <Link
+              key={t.slug}
+              to="/selas/$tipo"
+              params={{ tipo: t.slug as SelaTipo }}
+              className="group relative block rounded-lg overflow-hidden border-2 border-accent/30 shadow-2xl aspect-[4/5]"
+            >
+              {t.img && (
+                <img
+                  src={t.img}
+                  alt={`Sela ${t.name}`}
+                  loading="lazy"
+                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+              )}
+              <div className="absolute inset-0 bg-gradient-to-t from-foreground/90 via-foreground/30 to-foreground/20" />
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_35%,rgba(0,0,0,0.7)_100%)]" />
+              <div className="absolute inset-x-0 top-5 text-center px-3">
+                <h3 className="text-2xl md:text-3xl font-black uppercase text-accent drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)] tracking-wide leading-none" style={{ fontFamily: "Playfair Display, serif" }}>
+                  {t.name}
+                </h3>
+              </div>
+              <div className="absolute inset-x-0 bottom-5 flex justify-center">
+                <span className="inline-flex items-center gap-2 bg-accent text-accent-foreground font-bold text-xs md:text-sm px-5 py-2.5 rounded-full shadow-xl group-hover:brightness-110 transition uppercase tracking-wider">
+                  Confira aqui <ChevronRight className="size-4" />
                 </span>
-              </Link>
+              </div>
+              <span className="absolute top-3 right-3 bg-accent/90 text-accent-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">
+                {t.count}
+              </span>
+            </Link>
             ))}
           </div>
         </div>
