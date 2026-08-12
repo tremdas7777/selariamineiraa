@@ -123,12 +123,25 @@ function ProductPage() {
 
           {sizes.length > 0 && (
             <div className="mb-6">
-              <div className="flex items-baseline justify-between mb-2">
+              <div className="flex items-baseline justify-between mb-2 gap-3 flex-wrap">
                 <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
                   {product.category === "selas" ? "Tamanho da sela (polegadas)" : "Numeração"}
                 </span>
-                {size && <span className="text-xs font-bold">Selecionado: {size}</span>}
+                <div className="flex items-center gap-3">
+                  {size && <span className="text-xs font-bold">Selecionado: {size}</span>}
+                  {product.category === "selas" && (
+                    <button
+                      type="button"
+                      onClick={() => setGuideOpen(true)}
+                      className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-accent underline underline-offset-4 hover:text-primary transition"
+                    >
+                      <Ruler className="size-3.5" />
+                      Guia de medidas
+                    </button>
+                  )}
+                </div>
               </div>
+
               <div className="flex flex-wrap gap-2">
                 {sizes.map((s) => (
                   <button
