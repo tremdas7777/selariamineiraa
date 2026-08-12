@@ -91,7 +91,7 @@ function CategoryPage() {
                     </div>
                     <div className="mt-auto grid grid-cols-2 gap-2">
                       <Link to="/produto/$slug" params={{ slug: p.slug }} className="text-center bg-secondary text-foreground text-xs font-bold uppercase tracking-wider py-2.5 rounded hover:bg-foreground hover:text-background transition">Detalhes</Link>
-                      <button type="button" onClick={() => handleBuy(p)} className="bg-primary text-primary-foreground text-xs font-bold uppercase tracking-wider py-2.5 rounded hover:bg-accent transition">Comprar</button>
+                      <Link to="/produto/$slug" params={{ slug: p.slug }} className="text-center bg-primary text-primary-foreground text-xs font-bold uppercase tracking-wider py-2.5 rounded hover:bg-accent transition">Ver produto</Link>
                     </div>
                   </div>
                 </div>

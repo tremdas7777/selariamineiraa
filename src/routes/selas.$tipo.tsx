@@ -2,7 +2,6 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ChevronRight, Star } from "lucide-react";
 import { StoreLayout } from "@/components/StoreLayout";
 import { getSelaTipo, getSelasByTipo, selaTipos, formatBRL, type SelaTipo, type Product } from "@/lib/products";
-import { useCart } from "@/lib/cart";
 
 export const Route = createFileRoute("/selas/$tipo")({
   loader: ({ params }) => {
@@ -39,7 +38,6 @@ export const Route = createFileRoute("/selas/$tipo")({
 
 function SelaTipoPage() {
   const { tipo, items } = Route.useLoaderData();
-  const { add } = useCart();
   const others = selaTipos.filter((t) => t.slug !== tipo.slug);
 
   return (
@@ -89,7 +87,7 @@ function SelaTipoPage() {
                     </div>
                     <div className="mt-auto grid grid-cols-2 gap-2">
                       <Link to="/produto/$slug" params={{ slug: p.slug }} className="text-center bg-secondary text-foreground text-xs font-bold uppercase tracking-wider py-2.5 rounded hover:bg-foreground hover:text-background transition">Detalhes</Link>
-                      <button onClick={() => add({ slug: p.slug, name: p.name, image: p.image, price: p.priceNumber })} className="bg-primary text-primary-foreground text-xs font-bold uppercase tracking-wider py-2.5 rounded hover:bg-accent transition">Comprar</button>
+                      <Link to="/produto/$slug" params={{ slug: p.slug }} className="text-center bg-primary text-primary-foreground text-xs font-bold uppercase tracking-wider py-2.5 rounded hover:bg-accent transition">Ver produto</Link>
                     </div>
                   </div>
                 </div>
