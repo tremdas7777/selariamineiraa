@@ -53,6 +53,7 @@ function ProductPage() {
   const sizes = sizesFor(product.category);
   const [size, setSize] = useState<string | null>(null);
   const [sizeError, setSizeError] = useState(false);
+  const [guideOpen, setGuideOpen] = useState(false);
   const { add } = useCart();
   const navigate = useNavigate();
 
