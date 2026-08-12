@@ -167,6 +167,76 @@ function ProductPage() {
             </div>
           )}
 
+          {guideOpen && (
+            <div
+              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-foreground/70 backdrop-blur-sm"
+              role="dialog"
+              aria-modal="true"
+              aria-label="Guia de medidas das selas"
+              onClick={() => setGuideOpen(false)}
+            >
+              <div
+                className="relative w-full max-w-md rounded-xl border border-accent/40 bg-card shadow-2xl overflow-hidden"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button
+                  type="button"
+                  onClick={() => setGuideOpen(false)}
+                  className="absolute right-3 top-3 p-1.5 rounded-md text-muted-foreground hover:bg-secondary hover:text-foreground transition"
+                  aria-label="Fechar guia de medidas"
+                >
+                  <X className="size-4" />
+                </button>
+
+                <div className="px-6 pt-8 pb-5 text-center bg-primary">
+                  <h2
+                    className="text-3xl font-black uppercase leading-none tracking-tight text-primary-foreground"
+                    style={{ fontFamily: "Playfair Display, serif" }}
+                  >
+                    Guia de tamanhos
+                  </h2>
+                  <p className="mt-2 text-xs uppercase tracking-widest text-primary-foreground/80">
+                    Escolha pelo peso do cavaleiro
+                  </p>
+                </div>
+
+                <div className="p-5">
+                  <div className="grid grid-cols-2 px-3 pb-2 text-[11px] font-bold uppercase tracking-widest text-accent">
+                    <span>Peso</span>
+                    <span className="text-right">Tamanho</span>
+                  </div>
+                  <div className="rounded-md overflow-hidden border border-border">
+                    {[
+                      ["Até 60 kg", "13"],
+                      ["Até 70 kg", "14"],
+                      ["Até 80 kg", "15"],
+                      ["Até 90 kg", "16"],
+                      ["Até 120 kg", "17"],
+                    ].map(([peso, tam], i) => (
+                      <div
+                        key={tam}
+                        className={cn(
+                          "grid grid-cols-2 items-center px-3 py-3",
+                          i % 2 === 0 ? "bg-secondary" : "bg-card",
+                        )}
+                      >
+                        <span className="font-bold uppercase text-sm">{peso}</span>
+                        <span className="text-right text-xl font-black text-primary" style={{ fontFamily: "Playfair Display, serif" }}>
+                          {tam}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="mt-4 text-xs text-muted-foreground leading-relaxed">
+                    Em dúvida entre dois tamanhos? Escolha o maior para mais conforto em longas cavalgadas.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+
+
           {/* Qty + CTA */}
           <div className="flex items-center gap-3 mb-4">
             <div className="flex items-center border border-border rounded-md">
