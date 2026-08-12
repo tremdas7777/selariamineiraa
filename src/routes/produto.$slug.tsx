@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound, useRouter, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
-import { ChevronRight, ShieldCheck, Truck, CreditCard, Star, Minus, Plus, ShoppingBag, Check } from "lucide-react";
+import { ChevronRight, ShieldCheck, Truck, CreditCard, Star, Minus, Plus, ShoppingBag, Check, Ruler, X } from "lucide-react";
 import { StoreLayout } from "@/components/StoreLayout";
 import { getProduct, products, formatBRL, sizesFor } from "@/lib/products";
 import { useCart } from "@/lib/cart";
@@ -53,6 +53,7 @@ function ProductPage() {
   const sizes = sizesFor(product.category);
   const [size, setSize] = useState<string | null>(null);
   const [sizeError, setSizeError] = useState(false);
+  const [guideOpen, setGuideOpen] = useState(false);
   const { add } = useCart();
   const navigate = useNavigate();
 
@@ -123,12 +124,25 @@ function ProductPage() {
 
           {sizes.length > 0 && (
             <div className="mb-6">
-              <div className="flex items-baseline justify-between mb-2">
+              <div className="flex items-baseline justify-between mb-2 gap-3 flex-wrap">
                 <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
                   {product.category === "selas" ? "Tamanho da sela (polegadas)" : "Numeração"}
                 </span>
-                {size && <span className="text-xs font-bold">Selecionado: {size}</span>}
+                <div className="flex items-center gap-3">
+                  {size && <span className="text-xs font-bold">Selecionado: {size}</span>}
+                  {product.category === "selas" && (
+                    <button
+                      type="button"
+                      onClick={() => setGuideOpen(true)}
+                      className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-accent underline underline-offset-4 hover:text-primary transition"
+                    >
+                      <Ruler className="size-3.5" />
+                      Guia de medidas
+                    </button>
+                  )}
+                </div>
               </div>
+
               <div className="flex flex-wrap gap-2">
                 {sizes.map((s) => (
                   <button
@@ -152,6 +166,76 @@ function ProductPage() {
               )}
             </div>
           )}
+
+          {guideOpen && (
+            <div
+              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-foreground/70 backdrop-blur-sm"
+              role="dialog"
+              aria-modal="true"
+              aria-label="Guia de medidas das selas"
+              onClick={() => setGuideOpen(false)}
+            >
+              <div
+                className="relative w-full max-w-md rounded-xl border border-accent/40 bg-card shadow-2xl overflow-hidden"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <button
+                  type="button"
+                  onClick={() => setGuideOpen(false)}
+                  className="absolute right-3 top-3 p-1.5 rounded-md text-muted-foreground hover:bg-secondary hover:text-foreground transition"
+                  aria-label="Fechar guia de medidas"
+                >
+                  <X className="size-4" />
+                </button>
+
+                <div className="px-6 pt-8 pb-5 text-center bg-primary">
+                  <h2
+                    className="text-3xl font-black uppercase leading-none tracking-tight text-primary-foreground"
+                    style={{ fontFamily: "Playfair Display, serif" }}
+                  >
+                    Guia de tamanhos
+                  </h2>
+                  <p className="mt-2 text-xs uppercase tracking-widest text-primary-foreground/80">
+                    Escolha pelo peso do cavaleiro
+                  </p>
+                </div>
+
+                <div className="p-5">
+                  <div className="grid grid-cols-2 px-3 pb-2 text-[11px] font-bold uppercase tracking-widest text-accent">
+                    <span>Peso</span>
+                    <span className="text-right">Tamanho</span>
+                  </div>
+                  <div className="rounded-md overflow-hidden border border-border">
+                    {[
+                      ["Até 60 kg", "13"],
+                      ["Até 70 kg", "14"],
+                      ["Até 80 kg", "15"],
+                      ["Até 90 kg", "16"],
+                      ["Até 120 kg", "17"],
+                    ].map(([peso, tam], i) => (
+                      <div
+                        key={tam}
+                        className={cn(
+                          "grid grid-cols-2 items-center px-3 py-3",
+                          i % 2 === 0 ? "bg-secondary" : "bg-card",
+                        )}
+                      >
+                        <span className="font-bold uppercase text-sm">{peso}</span>
+                        <span className="text-right text-xl font-black text-primary" style={{ fontFamily: "Playfair Display, serif" }}>
+                          {tam}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="mt-4 text-xs text-muted-foreground leading-relaxed">
+                    Em dúvida entre dois tamanhos? Escolha o maior para mais conforto em longas cavalgadas.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+
 
           {/* Qty + CTA */}
           <div className="flex items-center gap-3 mb-4">
