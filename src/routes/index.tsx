@@ -1,9 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ShieldCheck, Truck, CreditCard, Tag, Mail, Star, ChevronRight, ShoppingBag } from "lucide-react";
+import { ShieldCheck, Truck, CreditCard, Tag, Mail, Star, ChevronRight } from "lucide-react";
 import heroSaddle from "@/assets/hero-saddle.jpg";
 import { StoreLayout } from "@/components/StoreLayout";
 import { products, formatBRL, categories, getProductsByCategory, selaTipos, getSelasByTipo, type SelaTipo, type CategorySlug } from "@/lib/products";
-import { useCart } from "@/lib/cart";
 
 export const Route = createFileRoute("/")({
   component: Home,
@@ -48,7 +47,6 @@ const beneficios = [
 ];
 
 function Home() {
-  const { add } = useCart();
   return (
     <StoreLayout>
       {/* Hero */}
@@ -228,13 +226,13 @@ function Home() {
                       >
                         Detalhes
                       </Link>
-                      <button
-                        onClick={() => add({ slug: p.slug, name: p.name, image: p.image, price: p.priceNumber })}
-                        className="flex-1 min-w-0 inline-flex items-center justify-center gap-1.5 h-10 px-2 rounded-full bg-primary text-primary-foreground text-[11px] font-bold uppercase tracking-wide shadow-sm hover:bg-accent hover:text-accent-foreground hover:shadow-md transition whitespace-nowrap"
+                      <Link
+                        to="/produto/$slug"
+                        params={{ slug: p.slug }}
+                        className="flex-1 min-w-0 inline-flex items-center justify-center h-10 px-2 rounded-full bg-primary text-primary-foreground text-[11px] font-bold uppercase tracking-wide shadow-sm hover:bg-accent hover:text-accent-foreground hover:shadow-md transition whitespace-nowrap"
                       >
-                        <ShoppingBag className="size-3.5 shrink-0" />
-                        Comprar
-                      </button>
+                        Ver produto
+                      </Link>
                     </div>
 
                   </div>
