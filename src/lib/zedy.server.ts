@@ -55,13 +55,22 @@ export async function listZedyProducts(): Promise<ZedyProduct[]> {
   return all;
 }
 
+const VARIANT_MAP_TTL_MS = 10 * 60 * 1000;
+let variantMapCache: { map: Map<string, string>; expiresAt: number } | null = null;
+
 /** Mapa título normalizado → variantId padrão (primeira variante disponível). */
 export async function buildVariantMap(): Promise<Map<string, string>> {
+  const now = Date.now();
+  if (variantMapCache && variantMapCache.expiresAt > now) {
+    return variantMapCache.map;
+  }
+
   const map = new Map<string, string>();
   for (const p of await listZedyProducts()) {
     const variant = p.variants?.find((v) => v.availableForSale) ?? p.variants?.[0];
     if (variant) map.set(normalizeTitle(p.title), String(variant.id));
   }
+  variantMapCache = { map, expiresAt: now + VARIANT_MAP_TTL_MS };
   return map;
 }
 

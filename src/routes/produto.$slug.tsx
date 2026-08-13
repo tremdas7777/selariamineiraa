@@ -1,9 +1,10 @@
-import { createFileRoute, Link, notFound, useRouter, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 import { ChevronRight, ShieldCheck, Truck, CreditCard, Star, Minus, Plus, ShoppingBag, Check, Ruler, X } from "lucide-react";
 import { StoreLayout } from "@/components/StoreLayout";
 import { getProduct, products, formatBRL, sizesFor } from "@/lib/products";
-import { useCart } from "@/lib/cart";
+import { useCart, itemKey } from "@/lib/cart";
+import { useStartCheckout } from "@/lib/useCheckout";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/produto/$slug")({
@@ -54,8 +55,8 @@ function ProductPage() {
   const [size, setSize] = useState<string | null>(null);
   const [sizeError, setSizeError] = useState(false);
   const [guideOpen, setGuideOpen] = useState(false);
-  const { add } = useCart();
-  const navigate = useNavigate();
+  const { add, items } = useCart();
+  const { startCheckout } = useStartCheckout();
 
   const parcela = product.priceNumber / 12;
   const pixPrice = product.priceNumber * 0.9;
@@ -70,8 +71,23 @@ function ProductPage() {
 
   const handleBuyNow = () => {
     if (sizes.length > 0 && !size) { setSizeError(true); return; }
-    add({ slug: product.slug, name: product.name, image: product.image, price: product.priceNumber, size: size ?? undefined }, qty);
-    navigate({ to: "/checkout" });
+    const newItem = {
+      slug: product.slug,
+      name: product.name,
+      image: product.image,
+      price: product.priceNumber,
+      size: size ?? undefined,
+      qty,
+    };
+    add(newItem, qty);
+
+    const key = itemKey(newItem);
+    const existing = items.find((p) => itemKey(p) === key);
+    const checkoutItems = existing
+      ? items.map((p) => (itemKey(p) === key ? { ...p, qty: p.qty + qty } : p))
+      : [...items, newItem];
+
+    void startCheckout(checkoutItems);
   };
 
   return (
@@ -256,7 +272,11 @@ function ProductPage() {
             </button>
           </div>
 
-          <button onClick={handleBuyNow} className="block w-full text-center bg-primary text-primary-foreground py-4 rounded-md font-black uppercase tracking-wider text-sm hover:bg-accent hover:text-accent-foreground transition mb-6">
+          <button
+            type="button"
+            onClick={handleBuyNow}
+            className="block w-full text-center bg-primary text-primary-foreground py-4 rounded-md font-black uppercase tracking-wider text-sm hover:bg-accent hover:text-accent-foreground transition mb-6"
+          >
             Comprar agora
           </button>
 

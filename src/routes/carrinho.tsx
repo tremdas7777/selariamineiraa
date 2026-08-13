@@ -3,6 +3,7 @@ import { Minus, Plus, Trash2, ShoppingBag, ArrowRight } from "lucide-react";
 import { StoreLayout } from "@/components/StoreLayout";
 import { useCart, itemKey } from "@/lib/cart";
 import { formatBRL } from "@/lib/products";
+import { useStartCheckout } from "@/lib/useCheckout";
 
 export const Route = createFileRoute("/carrinho")({
   head: () => ({
@@ -17,6 +18,7 @@ export const Route = createFileRoute("/carrinho")({
 
 function CartPage() {
   const { items, setQty, remove, subtotal, count } = useCart();
+  const { startCheckout } = useStartCheckout();
   const frete = subtotal > 0 && subtotal < 399 ? 29.9 : 0;
   const total = subtotal + frete;
 
@@ -99,9 +101,13 @@ function CartPage() {
             <div className="text-xs text-muted-foreground mb-5">
               ou <strong>12x de {formatBRL(total / 12)}</strong>
             </div>
-            <Link to="/checkout" className="w-full inline-flex items-center justify-center gap-2 bg-accent text-accent-foreground px-6 py-4 rounded-md font-black uppercase tracking-wider text-sm hover:brightness-110 transition">
+            <button
+              type="button"
+              onClick={() => void startCheckout()}
+              className="w-full inline-flex items-center justify-center gap-2 bg-accent text-accent-foreground px-6 py-4 rounded-md font-black uppercase tracking-wider text-sm hover:brightness-110 transition"
+            >
               Finalizar compra <ArrowRight className="size-4" />
-            </Link>
+            </button>
           </aside>
         </div>
       </div>
