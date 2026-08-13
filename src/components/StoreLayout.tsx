@@ -34,9 +34,9 @@ export function StoreHeader() {
   return (
     <>
       <header className="bg-background text-foreground sticky top-0 z-40 border-b-2 border-accent shadow-lg">
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 md:py-4 grid grid-cols-[auto_1fr_auto] items-center gap-3 md:gap-5">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 md:py-4 grid grid-cols-[1fr_auto_1fr] items-center gap-3 md:gap-5">
           {/* LEFT: menu (mobile) + contact/user (desktop xl) */}
-          <div className="flex items-center gap-4 min-w-0">
+          <div className="flex items-center gap-4 min-w-0 justify-self-start">
             <button
               type="button"
               aria-label="Abrir menu"
