@@ -98,8 +98,12 @@ export const saveLead = createServerFn({ method: "POST" })
 export const adminLogin = createServerFn({ method: "POST" })
   .inputValidator((data: { password: string }) => ({ password: String(data.password ?? "") }))
   .handler(async ({ data }) => {
-    const { passwordMatches, getAdminSession } = await import("./admin.server");
-    if (!passwordMatches(data.password)) return { ok: false as const };
+    const { passwordMatches, getAdminSession, getAdminConfigStatus } = await import("./admin.server");
+    const config = getAdminConfigStatus();
+    if (!config.canLogin) {
+      return { ok: false as const, error: "ADMIN_PASSWORD não configurada no servidor." };
+    }
+    if (!passwordMatches(data.password)) return { ok: false as const, error: "Senha incorreta." };
     const session = await getAdminSession();
     await session.update({ unlocked: true });
     return { ok: true as const };
@@ -143,15 +147,31 @@ export type AdminData = {
   logs: IntegrationLog[];
   settings: AdminSettings | null;
   now: number;
+  storage: "supabase" | "memory";
+  warnings: string[];
+  canLogin: boolean;
 };
 
-const EMPTY_DATA = (): AdminData => ({
-  authorized: false, events: [], orders: [], leads: [], logs: [], settings: null, now: Date.now(),
+const EMPTY_DATA = (partial?: Partial<AdminData>): AdminData => ({
+  authorized: false,
+  events: [],
+  orders: [],
+  leads: [],
+  logs: [],
+  settings: null,
+  now: Date.now(),
+  storage: "memory",
+  warnings: [],
+  canLogin: false,
+  ...partial,
 });
 
 export const getAdminData = createServerFn({ method: "GET" }).handler(async (): Promise<AdminData> => {
-  const { isUnlocked, snapshot } = await import("./admin.server");
-  if (!(await isUnlocked())) return EMPTY_DATA();
+  const { isUnlocked, snapshot, getAdminConfigStatus } = await import("./admin.server");
+  const config = getAdminConfigStatus();
+  if (!(await isUnlocked())) {
+    return EMPTY_DATA({ warnings: config.warnings, canLogin: config.canLogin, storage: config.storage });
+  }
   const snap = await snapshot();
   return {
     authorized: true,
@@ -161,5 +181,8 @@ export const getAdminData = createServerFn({ method: "GET" }).handler(async (): 
     logs: snap.logs,
     settings: snap.settings,
     now: Date.now(),
+    storage: snap.storage,
+    warnings: config.warnings,
+    canLogin: config.canLogin,
   };
 });

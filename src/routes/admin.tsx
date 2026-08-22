@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
-import { LayoutDashboard, ListOrdered, Radio, BarChart3, LogOut, RefreshCw, Plug, ShoppingCart, Store } from "lucide-react";
+import { LayoutDashboard, ListOrdered, Radio, BarChart3, LogOut, RefreshCw, Plug, ShoppingCart, Store, AlertTriangle } from "lucide-react";
 import { adminLogin, adminLogout, getAdminData } from "@/lib/admin.functions";
 import { AdminDashboard } from "@/components/admin/AdminDashboard";
 import { AdminOrders } from "@/components/admin/AdminOrders";
@@ -45,14 +45,14 @@ function AdminPage() {
   const queryClient = useQueryClient();
   const [tab, setTab] = useState<Tab>("dashboard");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
   const login = useServerFn(adminLogin);
   const logout = useServerFn(adminLogout);
   const fetchData = useServerFn(getAdminData);
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError, error: queryError, refetch } = useQuery({
     queryKey: ["admin-data"],
     queryFn: () => fetchData(),
     refetchInterval: 5000,
@@ -61,14 +61,14 @@ function AdminPage() {
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
     setPending(true);
-    setError(false);
+    setError(null);
     try {
       const res = await login({ data: { password } });
       if (res.ok) {
         setPassword("");
         await queryClient.invalidateQueries({ queryKey: ["admin-data"] });
       } else {
-        setError(true);
+        setError(res.error ?? "Senha incorreta.");
       }
     } finally {
       setPending(false);
@@ -79,24 +79,58 @@ function AdminPage() {
     return <div className="flex min-h-screen items-center justify-center text-muted-foreground">Carregando…</div>;
   }
 
+  if (isError) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background px-4">
+        <div className="w-full max-w-md rounded-xl border border-destructive/40 bg-card p-6 text-center">
+          <AlertTriangle className="mx-auto mb-4 size-8 text-destructive" />
+          <h1 className="text-lg font-semibold text-foreground">Erro ao carregar o painel</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            {queryError instanceof Error ? queryError.message : "Não foi possível conectar ao servidor."}
+          </p>
+          <button
+            type="button"
+            onClick={() => void refetch()}
+            className="mt-4 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
+          >
+            Tentar novamente
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (!data?.authorized) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background px-4">
         <form onSubmit={handleLogin} className="w-full max-w-sm rounded-xl border border-border bg-card p-6">
           <h1 className="text-lg font-semibold text-foreground">Painel administrativo</h1>
           <p className="mt-1 text-sm text-muted-foreground">Acesso restrito à equipe da Selaria Mineira.</p>
+          {data?.warnings.length ? (
+            <ul className="mt-4 space-y-1 rounded-md bg-secondary/50 p-3 text-xs text-muted-foreground">
+              {data.warnings.map((w) => (
+                <li key={w}>• {w}</li>
+              ))}
+            </ul>
+          ) : null}
+          {!data?.canLogin && (
+            <p className="mt-3 text-sm text-destructive">
+              Configure a variável <code className="font-mono">ADMIN_PASSWORD</code> no Lovable Cloud para habilitar o login.
+            </p>
+          )}
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             autoComplete="current-password"
             placeholder="Senha de acesso"
-            className="mt-4 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground"
+            disabled={!data?.canLogin}
+            className="mt-4 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground disabled:opacity-60"
           />
-          {error && <p className="mt-2 text-sm text-destructive">Senha incorreta.</p>}
+          {error && <p className="mt-2 text-sm text-destructive">{error}</p>}
           <button
             type="submit"
-            disabled={pending || !password}
+            disabled={pending || !password || !data?.canLogin}
             className="mt-4 w-full rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground disabled:opacity-60"
           >
             {pending ? "Verificando…" : "Entrar"}
@@ -105,6 +139,30 @@ function AdminPage() {
       </div>
     );
   }
+
+  const statusBanner = data.warnings.length > 0 && (
+    <div className="mb-6 rounded-xl border border-amber-500/40 bg-amber-500/10 p-4">
+      <div className="flex items-start gap-3">
+        <AlertTriangle className="mt-0.5 size-5 shrink-0 text-amber-600" />
+        <div className="space-y-1 text-sm">
+          <p className="font-medium text-foreground">
+            Armazenamento: {data.storage === "supabase" ? "Supabase (persistente)" : "Memória temporária"}
+          </p>
+          {data.warnings.map((w) => (
+            <p key={w} className="text-muted-foreground">{w}</p>
+          ))}
+          {data.storage === "memory" && (
+            <p className="text-muted-foreground">
+              Para live view e pedidos persistentes, configure{" "}
+              <code className="font-mono text-xs">SUPABASE_SERVICE_ROLE_KEY</code>,{" "}
+              <code className="font-mono text-xs">ADMIN_PASSWORD</code> e{" "}
+              <code className="font-mono text-xs">ADMIN_SESSION_SECRET</code> no Lovable Cloud.
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-background">
@@ -151,6 +209,7 @@ function AdminPage() {
       </header>
 
       <main className="mx-auto max-w-7xl px-4 py-6">
+        {statusBanner}
         {tab === "dashboard" && <AdminDashboard events={data.events} orders={data.orders} now={data.now} />}
         {tab === "orders" && <AdminOrders orders={data.orders} now={data.now} />}
         {tab === "live" && <AdminLive events={data.events} now={data.now} />}
@@ -166,7 +225,7 @@ function AdminPage() {
         )}
         {tab === "zedy" && <AdminZedy />}
         <p className="mt-8 text-xs text-muted-foreground">
-          Os dados são mantidos na memória do servidor e reiniciam a cada novo deploy. Ao ativar o Lovable Cloud, migramos para o banco.
+          Dados em {data.storage === "supabase" ? "Supabase" : "memória do servidor (temporário)"}. Atualização automática a cada 5 segundos.
         </p>
       </main>
     </div>

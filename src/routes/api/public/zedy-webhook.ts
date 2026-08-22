@@ -79,6 +79,14 @@ export const Route = createFileRoute("/api/public/zedy-webhook")({
           await upsertOrder(order);
           if (order.status === "APPROVED") {
             await markLeadConverted(order.customerEmail, order.customerPhone);
+            const { recordEvent } = await import("@/lib/admin.server");
+            await recordEvent({
+              step: "paid",
+              visitorId: `zedy-${orderId}`,
+              path: "/checkout",
+              label: orderId,
+              value: order.amount,
+            });
           }
           await notifyIntegrations(order);
         } catch (err) {

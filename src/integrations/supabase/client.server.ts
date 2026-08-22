@@ -31,7 +31,10 @@ function createSupabaseFetch(supabaseKey: string): typeof fetch {
 
 function createSupabaseAdminClient() {
   const SUPABASE_URL = process.env['SUPABASE_URL'];
-  const SUPABASE_SERVICE_ROLE_KEY = process.env['SUPABASE_SERVICE_ROLE_KEY'];
+  const SUPABASE_SERVICE_ROLE_KEY =
+    process.env['SUPABASE_SERVICE_ROLE_KEY'] ??
+    process.env['SUPABASE_SECRET_KEY'] ??
+    process.env['SUPABASE_SERVICE_KEY'];
 
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
     const missing = [
@@ -56,6 +59,17 @@ function createSupabaseAdminClient() {
 }
 
 let _supabaseAdmin: ReturnType<typeof createSupabaseAdminClient> | undefined;
+
+/** Retorna o client admin ou null se Supabase não estiver configurado. */
+export function tryGetSupabaseAdmin(): ReturnType<typeof createSupabaseAdminClient> | null {
+  try {
+    if (!_supabaseAdmin) _supabaseAdmin = createSupabaseAdminClient();
+    return _supabaseAdmin;
+  } catch (err) {
+    console.error("[Supabase]", err instanceof Error ? err.message : err);
+    return null;
+  }
+}
 
 // Server-side Supabase client with service role - bypasses RLS
 // SECURITY: Only use this for trusted server-side operations, never expose to client code
