@@ -201,11 +201,27 @@ export function StoreFooter() {
             SELARIA <span className="text-accent">MINEIRA</span>
           </div>
           <p className="text-sm mb-4">Tradição em couro há mais de 40 anos no coração de Minas Gerais.</p>
-          <div className="flex gap-3">
-            <a href="#" aria-label="Instagram" className="size-9 rounded-full border border-background/20 grid place-items-center hover:bg-accent hover:border-accent transition"><Instagram className="size-4" /></a>
+          <div className="flex items-center gap-3 flex-wrap">
+            <a
+              href="https://www.instagram.com/selariamineira"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram @selariamineira"
+              className="size-9 rounded-full border border-background/20 grid place-items-center hover:bg-accent hover:border-accent transition"
+            >
+              <Instagram className="size-4" />
+            </a>
             <a href="#" aria-label="Facebook" className="size-9 rounded-full border border-background/20 grid place-items-center hover:bg-accent hover:border-accent transition"><Facebook className="size-4" /></a>
             <a href="#" aria-label="YouTube" className="size-9 rounded-full border border-background/20 grid place-items-center hover:bg-accent hover:border-accent transition"><Youtube className="size-4" /></a>
           </div>
+          <a
+            href="https://www.instagram.com/selariamineira"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block mt-2 text-sm hover:text-accent transition"
+          >
+            @selariamineira
+          </a>
         </div>
         <div>
           <h4 className="font-bold text-background mb-4 text-sm uppercase tracking-widest">Institucional</h4>
@@ -228,15 +244,23 @@ export function StoreFooter() {
         <div>
           <h4 className="font-bold text-background mb-4 text-sm uppercase tracking-widest">Contato</h4>
           <ul className="space-y-3 text-sm">
-            <li className="flex items-start gap-2"><MapPin className="size-4 text-accent mt-0.5 shrink-0" /> Vertentes, Minas Gerais</li>
+            <li className="flex items-start gap-2">
+              <MapPin className="size-4 text-accent mt-0.5 shrink-0" />
+              <span>
+                Av. Presidente Dutra, 2147 — Bairro Brasil
+                <br />
+                Vitória da Conquista — BA, CEP 45051-030
+              </span>
+            </li>
             <li className="flex items-start gap-2"><Mail className="size-4 text-accent mt-0.5 shrink-0" /> contato@selariamineira.com.br</li>
           </ul>
         </div>
       </div>
 
       <div className="border-t border-background/10 pt-6">
-        <div className="max-w-7xl mx-auto px-4 text-center text-xs">
-          © {new Date().getFullYear()} Selaria Mineira. Todos os direitos reservados.
+        <div className="max-w-7xl mx-auto px-4 text-center text-xs space-y-1">
+          <p>CNPJ: 28.613.645/0001-19</p>
+          <p>© {new Date().getFullYear()} Selaria Mineira. Todos os direitos reservados.</p>
         </div>
       </div>
     </footer>
