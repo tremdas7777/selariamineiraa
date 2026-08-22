@@ -47,6 +47,65 @@ export const Route = createFileRoute("/produto/$slug")({
   },
 });
 
+function ProductGallery({ images, name }: { images: string[]; name: string }) {
+  const [active, setActive] = useState(0);
+
+  if (images.length <= 1) {
+    return (
+      <div className="bg-card rounded-lg border border-border overflow-hidden">
+        <img src={images[0]} alt={name} width={800} height={800} className="w-full aspect-square object-contain bg-secondary p-4" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-card rounded-lg border border-border overflow-hidden">
+      <div className="relative">
+        <img
+          src={images[active]}
+          alt={`${name} — foto ${active + 1}`}
+          width={800}
+          height={800}
+          className="w-full aspect-square object-contain bg-secondary p-4"
+        />
+        <button
+          type="button"
+          onClick={() => setActive((i) => (i === 0 ? images.length - 1 : i - 1))}
+          className="absolute left-2 top-1/2 -translate-y-1/2 size-9 rounded-full bg-background/90 border border-border shadow flex items-center justify-center hover:bg-secondary transition"
+          aria-label="Foto anterior"
+        >
+          ‹
+        </button>
+        <button
+          type="button"
+          onClick={() => setActive((i) => (i === images.length - 1 ? 0 : i + 1))}
+          className="absolute right-2 top-1/2 -translate-y-1/2 size-9 rounded-full bg-background/90 border border-border shadow flex items-center justify-center hover:bg-secondary transition"
+          aria-label="Próxima foto"
+        >
+          ›
+        </button>
+      </div>
+      <div className="flex gap-2 p-3 border-t border-border overflow-x-auto">
+        {images.map((src, i) => (
+          <button
+            key={src}
+            type="button"
+            onClick={() => setActive(i)}
+            aria-label={`Ver foto ${i + 1}`}
+            aria-pressed={active === i}
+            className={cn(
+              "shrink-0 size-16 rounded-md border-2 overflow-hidden bg-secondary transition",
+              active === i ? "border-primary" : "border-transparent opacity-70 hover:opacity-100",
+            )}
+          >
+            <img src={src} alt="" className="w-full h-full object-contain p-0.5" />
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function ProductPage() {
   const { product } = Route.useLoaderData();
   const [qty, setQty] = useState(1);
@@ -104,10 +163,7 @@ function ProductPage() {
       </div>
 
       <section className="max-w-7xl mx-auto px-4 py-10 grid md:grid-cols-2 gap-10">
-        {/* Image */}
-        <div className="bg-card rounded-lg border border-border overflow-hidden">
-          <img src={product.image} alt={product.name} width={800} height={800} className="w-full aspect-square object-contain bg-secondary p-4" />
-        </div>
+        <ProductGallery images={product.images} name={product.name} />
 
         {/* Info */}
         <div>

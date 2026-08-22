@@ -1,7 +1,14 @@
 import raw from "@/data/products.json";
 
-export type RawProduct = { name: string; image: string; price: string; oldPrice: string | null; description?: string };
-export type Product = RawProduct & { slug: string; priceNumber: number; category: CategorySlug };
+export type RawProduct = {
+  name: string;
+  image: string;
+  images?: string[];
+  price: string;
+  oldPrice: string | null;
+  description?: string;
+};
+export type Product = RawProduct & { slug: string; priceNumber: number; category: CategorySlug; images: string[] };
 
 export type CategorySlug = "selas" | "arreios-cabecadas" | "cabrestos" | "esporas-freios" | "mantas-perneiras" | "botinas" | "acessorios";
 
@@ -45,8 +52,11 @@ export const products: Product[] = (raw as RawProduct[]).map((p) => {
   const original = parseBRL(p.price);
   const discounted = Math.round(original * (1 - DISCOUNT) * 100) / 100;
   const priceStr = discounted.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const images = p.images?.length ? p.images : [p.image];
   return {
     ...p,
+    image: images[0],
+    images,
     price: priceStr,
     oldPrice: p.oldPrice ?? p.price,
     slug,
